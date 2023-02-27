@@ -1,0 +1,16 @@
+- when udpate blog, if tag is existed, we not add it
+
+NEED TO LOGIN
+ - blogger can only update their information
+ - blogger can only CRUD their blog
+
+COUNT VIEW
+ - count view base on IP, if a IP send request to findOne Blog within 2s, we will not increase the view of the Blog
+
+MIGRATION
+ - Change something in "user.entity.ts" (change the entity)
+ - run command "npm run migration:generate -- db/migrations/<migration's_name>" (base on configuration command in package.json) => generate a migration at ./db/migrations/, this migration file will automatically generate SQL query corresponding to your changed DB in user.entity.ts
+ - npm run migration:run => run the migration => Your DB will change
+ - npm run migration:revert => revert the migration
+ - see the options in package.json
+ - NOTE: migration:run will update the DB to the lastest change, while migration:revert will revert the DB step by step
