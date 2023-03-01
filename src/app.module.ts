@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { AbilityModule } from './ability/ability.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AbilityModule } from './ability/ability.module';
     }),
     AbilityModule,
     CacheModule.register(),
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
