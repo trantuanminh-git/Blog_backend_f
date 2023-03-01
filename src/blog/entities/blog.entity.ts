@@ -27,11 +27,18 @@ export class Blog {
   @IsString()
   content: string;
 
-  @CreateDateColumn() // You don't need to set this column - it will be automatically set
-  created_at: Date; // Creation date
+  // // Postgresql localhost
+  // @CreateDateColumn() // You don't need to set this column - it will be automatically set
+  // created_at: Date; // Creation date
 
-  @UpdateDateColumn() // You don't need to set this column - it will be automatically set
-  updated_at: Date; // Last updated date
+  // @UpdateDateColumn() // You don't need to set this column - it will be automatically set
+  // updated_at: Date; // Last updated date
+
+  @Column('datetime')
+  created_at: Date;
+
+  @Column('datetime')
+  updated_at: Date;
 
   @Column({ default: 0 })
   view: number;
