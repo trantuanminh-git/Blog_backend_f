@@ -14,6 +14,9 @@ import { AbilityModule } from './ability/ability.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot(config),
     UserModule,
     BlogModule,
