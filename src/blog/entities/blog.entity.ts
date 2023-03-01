@@ -1,4 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
+import { Notification } from 'src/notification/entities/notification.entity';
+import { Rating } from 'src/rating/entities/rating.entity';
 import { Tag } from 'src/tag/entities/tag.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
@@ -8,6 +10,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -42,6 +45,12 @@ export class Blog {
   @ManyToMany(() => Tag, (tag) => tag.blogs)
   @JoinTable()
   tags: Tag[];
+
+  @OneToMany(() => Rating, (rating : Rating) => rating.blogId, {cascade: true})
+  ratings: Rating[];
+
+  @OneToMany(() => Notification, (notification : Notification) => notification.blogId, {cascade: true})
+  notifications: Notification[];
 
   constructor(title: string, content: string, tags: Tag[], user: User) {
     this.title = title;

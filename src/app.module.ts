@@ -11,7 +11,9 @@ import { AuthModule } from './auth/auth.module';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { AbilityModule } from './ability/ability.module';
-
+import { RatingModule } from './rating/rating.module';
+import { NotificationModule } from './notification/notification.module';
+import { ConfigModule} from '@nestjs/config'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +30,8 @@ import { AbilityModule } from './ability/ability.module';
     }),
     AbilityModule,
     CacheModule.register(),
+    RatingModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -29,6 +29,7 @@
     "@automapper/nestjs": "^8.7.7",
     "@casl/ability": "^6.3.3",
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.0.2",
     "@nestjs/mapped-types": "*",
