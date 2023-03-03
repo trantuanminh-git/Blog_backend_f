@@ -8,13 +8,13 @@ export class Rating {
   id: number;
 
   @Column('int')
-  star: Number
+  star: number
 
   @Column('datetime')
-  created_at: Date
+  createdAt: Date
 
   @Column('datetime')
-  updated_at: Date
+  updatedAt: Date
 
   @Column('int')
   userId: number
@@ -25,7 +25,6 @@ export class Rating {
   @JoinColumn({ name: "id" })
   user: User;
 
-
   @Column('int')
   blogId: number
 
@@ -34,4 +33,16 @@ export class Rating {
   })
   @JoinColumn({ name: "id" })
   blog: Blog;
+
+  constructor(
+    star: number,
+    createdAt: Date,
+    userId: number,
+    blogId: number
+    ) {
+    this.star = star
+    this.createdAt = createdAt
+    this.userId = userId
+    this.blogId = blogId
+  }
 }
