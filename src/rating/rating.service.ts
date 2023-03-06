@@ -12,20 +12,19 @@ export class RatingService {
   ) {}
 
   async create(createRatingDto: CreateRatingDto, userId: number, blogId: number): Promise<Rating> {
+    const checkRating = await this.ratingRepository.findOneBy(
+      {
+        userId: userId,
+        blogId: blogId
+      })
+
+    if (checkRating) {
+      throw new HttpException("User just one rating.", HttpStatus.BAD_REQUEST);
+    }
+
     const rating = new Rating(createRatingDto.star, new Date(), userId, blogId);
     const saveRating = this.ratingRepository.save(rating);
     return saveRating;
-  }
-
-  async findAllInBlog(blogId: number) {
-    return await this.ratingRepository
-                        .createQueryBuilder('rating')
-                        // .where("rating.blogId = :id", { id: id })
-                        // .leftJoinAndSelect("rating.tags", "tag")
-                        // .leftJoin("blog.user", "user")
-                        // .addSelect(["user.userName", "user.email"])
-                        // .getOne()
-              ;
   }
 
   findOne(id: number) {
@@ -62,4 +61,22 @@ export class RatingService {
 
     return rating;
   }
+
+  async searchRatingByStar(id: number, star: number, page: number, limit: number): Promise<[Rating[], number]> {
+    limit = 10
+    const skipRating = limit*(page-1)
+
+    return await this.ratingRepository.findAndCount({
+        take: limit,
+        skip: skipRating,
+        order: {
+            createdAt: 'DESC'
+        },
+        where: {
+          blogId: id,
+          star: star
+        }
+    });
+  }
+
 }
