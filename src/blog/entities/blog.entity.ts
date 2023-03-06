@@ -7,6 +7,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -39,6 +40,9 @@ export class Blog {
   @Column({ default: 0 })
   view: number;
 
+  @Column()
+  userId: number
+
   @ManyToOne(() => User, (user) => user.blogs)
   user: User;
 
@@ -46,10 +50,10 @@ export class Blog {
   @JoinTable()
   tags: Tag[];
 
-  @OneToMany(() => Rating, (rating : Rating) => rating.blogId, {cascade: true})
+  @OneToMany(() => Rating, (rating : Rating) => rating.blog, {cascade: true})
   ratings: Rating[];
 
-  @OneToMany(() => Notification, (notification : Notification) => notification.blogId, {cascade: true})
+  @OneToMany(() => Notification, (notification : Notification) => notification.blog, {cascade: true})
   notifications: Notification[];
 
   constructor(title: string, content: string, tags: Tag[], user: User) {

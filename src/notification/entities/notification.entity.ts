@@ -2,25 +2,31 @@ import { Blog } from 'src/blog/entities/blog.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
 
+export enum NotificationType {
+  LIKE = 'like',
+  COMMENT = 'comment',
+  RATING = 'rating',
+}
+
 @Entity('notification')
 export class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  type: Text
+  type: NotificationType
 
   @Column()
-  content: Text
+  content: string
 
   @Column()
-  is_read: boolean
+  isRead: boolean
 
   @Column('datetime')
-  created_at: Date
+  createdAt: Date
 
   @Column('datetime')
-  updated_at: Date
+  updatedAt: Date
 
   @Column('int')
   userId: number
@@ -28,7 +34,11 @@ export class Notification {
   @ManyToOne(() => User, (user: User) => user.notifications, {
     onDelete: 'CASCADE'
   })
-  @JoinColumn({ name: "id" })
+  @JoinColumn(
+    { 
+      name: "userID" ,
+      referencedColumnName: "id"
+    })
   user: User;
 
 
@@ -38,6 +48,19 @@ export class Notification {
   @ManyToOne(() => Blog, ( blog: Blog) =>  blog.notifications, {
     onDelete: 'CASCADE'
   })
-  @JoinColumn({ name: "id" })
+  @JoinColumn(
+    { 
+      name: "blogId" , 
+      referencedColumnName: 'id'
+    })
   blog: Blog;
+
+  constructor( type: NotificationType, content, createdAt, userId, blogId) {
+    this.type = type
+    this.content = content
+    this.createdAt = createdAt
+    this.userId = userId
+    this.blogId = blogId
+
+  }
 }

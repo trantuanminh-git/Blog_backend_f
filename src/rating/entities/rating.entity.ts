@@ -22,7 +22,10 @@ export class Rating {
   @ManyToOne(() => User, (user: User) => user.ratings, {
     onDelete: 'CASCADE'
   })
-  @JoinColumn({ name: "id" })
+  @JoinColumn(
+    { name: "userId" ,
+      referencedColumnName: 'id'
+    })
   user: User;
 
   @Column('int')
@@ -31,7 +34,7 @@ export class Rating {
   @ManyToOne(() => Blog, ( blog: Blog) =>  blog.ratings, {
     onDelete: 'CASCADE'
   })
-  @JoinColumn({ name: "id" })
+  @JoinColumn({name: "blogId"})
   blog: Blog;
 
   constructor(

@@ -8,8 +8,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -46,8 +46,11 @@ export class User {
   @AutoMap()
   refreshToken: string;
 
+  @Column()
+  roleId: number
+
   @AutoMap()
-  @OneToOne(() => Role)
+  @ManyToOne(() => Role, { cascade: true})
   @JoinColumn()
   role: Role;
 
