@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
+import { Like } from 'src/like/entities/like.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { User } from 'src/user/entities/user.entity';
 import { CHECK_ABILITY, RequiredRule } from './abilities.decorator';
@@ -28,7 +29,6 @@ export class PoliciesGuard implements CanActivate {
     // const currUser = GetCurrentUser();
     console.log('>>>>>>>>>>>currUser');
     console.log(requestt.user);
-
     const user1: User = {
       id: 40,
       email: 'email2@gmail.com',
@@ -38,10 +38,11 @@ export class PoliciesGuard implements CanActivate {
       password: 'abc',
       refreshToken: 'abc',
       blogs: [],
+      likes: [],
+      comments: [],
     };
     const ability = this.caslAbilityFactory.defineAbility(user1);
     // console.log(ability);
-
     try {
       rules.forEach((rule) =>
         ForbiddenError.from(ability).throwUnlessCan(rule.action, rule.subject),

@@ -12,11 +12,13 @@ import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { AbilityModule } from './ability/ability.module';
 import { LikeModule } from './like/like.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: `.env`,
     }),
     TypeOrmModule.forRoot(config),
     UserModule,
