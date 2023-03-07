@@ -7,12 +7,16 @@ import { UserService } from 'src/user/user.service';
 import { UserModule } from 'src/user/user.module';
 import { TagModule } from 'src/tag/tag.module';
 import { AbilityModule } from 'src/ability/ability.module';
+import { LikeModule } from 'src/like/like.module';
+import { CommentModule } from 'src/comment/comment.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Blog]),
     UserModule,
     TagModule,
+    LikeModule,
+    CommentModule,
     AbilityModule,
     CacheModule.register(),
   ],

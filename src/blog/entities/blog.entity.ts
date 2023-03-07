@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Like } from 'src/like/entities/like.entity';
+import { Likes } from 'src/like/entities/like.entity';
 import { Tag } from 'src/tag/entities/tag.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
@@ -17,7 +17,7 @@ import {
 } from 'typeorm';
 import { CreateBlogDto } from '../dto/create-blog.dto';
 
-@Entity()
+@Entity('blog')
 export class Blog {
   @PrimaryGeneratedColumn()
   id: number;
@@ -48,12 +48,21 @@ export class Blog {
   tags: Tag[];
 
   @AutoMap()
-  @OneToMany(() => Like, (like) => like.user)
-  likes: Like[];
+  @OneToMany(() => Likes, (like) => like.user)
+  likes: Likes[];
+
+  @Column({ default: 0 })
+  likeCount: number;
 
   @AutoMap()
   @OneToMany(() => Comment, (comment) => comment.blog)
   comments: Comment[];
+
+  @Column({ default: 0 })
+  cmtCount: number;
+
+  @Column('simple-json')
+  shares: { [key: string]: number };
 
   constructor(title: string, content: string, tags: Tag[], user: User) {
     this.title = title;

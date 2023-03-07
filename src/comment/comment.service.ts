@@ -36,9 +36,19 @@ export class CommentService {
       .getOne();
   }
 
+  async findOneByParent(parentId: number) {
+    return this.commentRepository
+      .createQueryBuilder('comment')
+      .where('comment.parentId = :parentid', { parentId: parentId })
+      .leftJoinAndSelect('comment.blog', 'blog')
+      .leftJoin('comment.user', 'user')
+      .addSelect(['user.userName', 'blog.title'])
+      .getOne();
+  }
+
   async update(
     id: number,
-    updateRatingDto: UpdateCommentDto,
+    updateCommentDto: UpdateCommentDto,
   ): Promise<Comment> {
     const comment = await this.commentRepository.findOneBy({
       id: id,
@@ -51,7 +61,7 @@ export class CommentService {
       );
     }
 
-    comment.content = updateRatingDto.content;
+    comment.content = updateCommentDto.content;
 
     return await this.commentRepository.save(comment);
   }

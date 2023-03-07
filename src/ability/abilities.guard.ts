@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
-import { Like } from 'src/like/entities/like.entity';
+import { Likes } from 'src/like/entities/like.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { User } from 'src/user/entities/user.entity';
 import { CHECK_ABILITY, RequiredRule } from './abilities.decorator';

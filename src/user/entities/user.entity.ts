@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Blog } from 'src/blog/entities/blog.entity';
-import { Like } from 'src/like/entities/like.entity';
+import { Likes } from 'src/like/entities/like.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
 import {
@@ -56,8 +56,8 @@ export class User {
   blogs: Blog[];
 
   @AutoMap()
-  @OneToMany(() => Like, (like) => like.user)
-  likes: Like[];
+  @OneToMany(() => Likes, (like) => like.user)
+  likes: Likes[];
 
   @AutoMap()
   @OneToMany(() => Comment, (comment) => comment.user)

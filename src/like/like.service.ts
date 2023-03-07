@@ -1,25 +1,32 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateLikeDto } from './dto/create-like.dto';
-import { Like } from './entities/like.entity';
+import { Likes } from './entities/like.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class LikeService {
   constructor(
-    @InjectRepository(Like) private likeRepository: Repository<Like>,
+    @InjectRepository(Likes) private likeRepository: Repository<Likes>,
   ) {}
 
   async create(
     createLikeDto: CreateLikeDto,
     userId: number,
     blogId: number,
-  ): Promise<Like> {
-    const like = new Like();
+  ): Promise<Likes> {
+    const like = new Likes();
     like.userId = userId;
     like.blogId = blogId;
     const saveLike = this.likeRepository.save(like);
     return saveLike;
+  }
+
+  async findOneByBlogAndUser(userId: number, blogId: number) {
+    return await this.likeRepository.findOneBy({
+      userId: userId,
+      blogId: blogId,
+    });
   }
 
   async findOne(id: number) {
@@ -32,20 +39,18 @@ export class LikeService {
       .getOne();
   }
 
-  async remove(id: number, userId: number): Promise<Like> {
-    const like = await this.likeRepository.findOneBy({
-      id: id,
-      userId: userId,
-    });
-
+  async remove(userId: number, blogId: number): Promise<Likes> {
+    const like = await this.findOneByBlogAndUser(userId, blogId);
     if (!like) {
       throw new HttpException(
-        "This rating doesn't exists.",
+        "This like doesn't exists.",
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    await this.likeRepository.delete({ id: id });
+    await this.likeRepository.delete({
+      id: like.id,
+    });
 
     return like;
   }

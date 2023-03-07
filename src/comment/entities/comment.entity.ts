@@ -10,7 +10,7 @@ import {
   OneToMany,
 } from 'typeorm';
 
-@Entity('likes')
+@Entity('comment')
 export class Comment {
   @PrimaryGeneratedColumn()
   id: number;

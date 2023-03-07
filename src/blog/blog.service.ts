@@ -21,6 +21,10 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Blog } from './entities/blog.entity';
 import { Cache } from 'cache-manager';
+import { where } from '@ucast/mongo2js';
+import { Likes } from 'src/like/entities/like.entity';
+import { CommentService } from 'src/comment/comment.service';
+import { LikeService } from 'src/like/like.service';
 
 @Injectable()
 export class BlogService {
@@ -28,6 +32,8 @@ export class BlogService {
     @InjectRepository(Blog) private blogRepository: Repository<Blog>,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Tag) private tagRepository: Repository<Tag>,
+    private readonly commentService: CommentService,
+    private readonly likeService: LikeService,
     private readonly tagService: TagService,
     private readonly userService: UserService,
     private abilityFactory: AbilityFactory,
@@ -247,5 +253,69 @@ export class BlogService {
     }
 
     return this.blogRepository.remove(blog);
+  }
+
+  async likeBlog(id: number, userId: number): Promise<Blog> {
+    try {
+      const blog = await this.blogRepository.findOneBy({ id: id });
+      const like = await this.likeService.findOneByBlogAndUser(userId, id);
+      // check if userId has already liked post
+      if (!like) {
+        this.likeService.create({}, userId, id);
+        blog.likeCount += 1;
+      } else {
+        this.likeService.remove(userId, id);
+        blog.likeCount -= 1;
+      }
+      return await this.blogRepository.save(blog);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async commentToBlog(
+    content: string,
+    commentId: number,
+    userId: number,
+    id: number,
+    parentId?: number,
+  ): Promise<Blog> {
+    try {
+      const blog = await this.blogRepository.findOneBy({ id: id });
+      const comment = await this.commentService.findOne(commentId);
+      const subcomment = await this.commentService.findOneByParent(commentId);
+      if (!comment) {
+        this.commentService.create({ content }, userId, id, parentId);
+        blog.cmtCount += 1;
+      } else {
+        if (!subcomment) {
+          this.commentService.remove(commentId);
+        } else {
+          this.commentService.update(commentId, {
+            content: 'This comment has been deleted',
+          });
+        }
+        blog.cmtCount -= 1;
+      }
+      return await this.blogRepository.save(blog);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async shareBlog(id: number): Promise<Blog> {
+    const blog = await this.blogRepository.findOne({ where: { id: id } });
+
+    if (!blog) {
+      throw new Error('Blog post not found');
+    }
+
+    // let currentShares = blog.shares;
+    // currentShares = (currentShares || 0) + 1;
+
+    return this.blogRepository.save({
+      ...blog,
+      // shares: currentShares,
+    });
   }
 }
