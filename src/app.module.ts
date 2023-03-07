@@ -13,7 +13,7 @@ import { classes } from '@automapper/classes';
 import { AbilityModule } from './ability/ability.module';
 import { RatingModule } from './rating/rating.module';
 import { NotificationModule } from './notification/notification.module';
-import { ConfigModule} from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config'
 @Module({
   imports: [
     ConfigModule.forRoot({
