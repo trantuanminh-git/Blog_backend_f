@@ -12,8 +12,10 @@ import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { AbilityModule } from './ability/ability.module';
 import { LikeModule } from './like/like.module';
-import { ConfigModule } from '@nestjs/config';
 
+import { RatingModule } from './rating/rating.module';
+import { NotificationModule } from './notification/notification.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -32,6 +34,8 @@ import { ConfigModule } from '@nestjs/config';
     AbilityModule,
     CacheModule.register(),
     LikeModule,
+    RatingModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

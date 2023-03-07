@@ -35,6 +35,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/platform-socket.io": "^9.3.9",
     "@nestjs/typeorm": "^9.0.1",
     "@ucast/mongo2js": "^1.3.4",
     "bcrypt": "^5.1.0",
@@ -47,7 +48,8 @@
     "pg": "^8.9.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.11"
+    "typeorm": "^0.3.11",
+    "wscat": "^5.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.2.0",

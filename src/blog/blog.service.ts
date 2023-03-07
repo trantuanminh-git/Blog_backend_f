@@ -25,6 +25,7 @@ import { where } from '@ucast/mongo2js';
 import { Likes } from 'src/like/entities/like.entity';
 import { CommentService } from 'src/comment/comment.service';
 import { LikeService } from 'src/like/like.service';
+import { Rating } from 'src/rating/entities/rating.entity';
 
 @Injectable()
 export class BlogService {
@@ -115,17 +116,19 @@ export class BlogService {
   }
 
   async findById(id: number, ip: string): Promise<Blog> {
-    // return await this.blogRepository.find({
+    // const blog1 = await this.blogRepository.findOne({
     //   where: { id },
-    //   relations: ['user', 'tags'],
+    //   relations: ['user', 'tags', 'ratings'],
     // });
     const blog = await this.blogRepository
       .createQueryBuilder('blog')
       .where('blog.id = :id', { id: id })
       .leftJoinAndSelect('blog.tags', 'tags')
-      .leftJoin('blog.user', 'user', 'blog.userId = user.id')
+      .leftJoin('blog.user', 'user')
+      .leftJoinAndSelect('blog.ratings', 'rating')
       .addSelect(['user.username', 'user.email'])
       .getOne();
+
     if (!blog) {
       const errors = { blog: 'Blog not found.' };
       throw new HttpException(
@@ -317,5 +320,39 @@ export class BlogService {
       ...blog,
       // shares: currentShares,
     });
+  }
+
+  async calculateAverageRating(blogId: number): Promise<number> {
+    const blog = await this.blogRepository.findOne({
+      where: {
+        id: blogId,
+      },
+      relations: {
+        ratings: true,
+      },
+    });
+
+    if (!blog) {
+      throw new Error('Blog not found');
+    }
+
+    const ratings = blog.ratings.map((rating) => rating.star);
+    const sum = ratings.reduce((a, b) => a + b, 0);
+    const average = sum / ratings.length;
+
+    return average;
+  }
+
+  async findUserIdByBlogId(blogId: number): Promise<number> {
+    const blog = await this.blogRepository.findOneBy({ id: blogId });
+
+    if (!blog) {
+      throw new HttpException(
+        "This blog doesn't exists.",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return blog.userId;
   }
 }
