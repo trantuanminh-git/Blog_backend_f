@@ -77,8 +77,9 @@ export class Blog {
   @Column()
   averageRating: number;
 
-  @Column('simple-json')
-  shares: { [key: string]: number };
+  // @Column('simple-json')
+  // shares: { [key: string]: number };
+
   @OneToMany(() => Rating, (rating: Rating) => rating.blog, { cascade: true })
   ratings: Rating[];
 

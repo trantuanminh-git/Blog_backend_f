@@ -21,12 +21,10 @@ import { NotificationType } from 'src/notification/entities/notification.entity'
 import { BlogService } from 'src/blog/blog.service';
 @Controller()
 export class RatingController {
-  constructor(
-    private readonly ratingService: RatingService,
-    private notificationService: NotificationService,
-  ) // private blogService: BlogService,
+  constructor(private readonly ratingService: RatingService) {}
+  //private notificationService: NotificationService) {}
+  // private blogService: BlogService,
   // private notificationGateway: NotificationGateway,
-  {}
 
   @UseGuards(AtGuard)
   @Post('/blog/:id/rating')
