@@ -6,8 +6,6 @@ export class CreateBlogDto {
   title: string;
   @IsNotEmpty()
   content: string;
-  @IsNotEmpty()
-  userId: number;
 
   tags: string[];
 }

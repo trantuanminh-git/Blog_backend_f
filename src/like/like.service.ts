@@ -22,6 +22,10 @@ export class LikeService {
     return saveLike;
   }
 
+  async findAll() {
+    return await this.likeRepository.find();
+  }
+
   async findOneByBlogAndUser(userId: number, blogId: number) {
     return await this.likeRepository.findOneBy({
       userId: userId,

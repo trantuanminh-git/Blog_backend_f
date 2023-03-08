@@ -31,10 +31,17 @@ export class Blog {
   @IsString()
   content: string;
 
-  @CreateDateColumn({ default: new Date() }) // You don't need to set this column - it will be automatically set
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
   created_at: Date; // Creation date
 
-  @UpdateDateColumn({ default: new Date() }) // You don't need to set this column - it will be automatically set
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
   updated_at: Date; // Last updated date
 
   @Column({ default: 0 })

@@ -30,10 +30,10 @@ export class CommentController {
     );
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.commentService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.commentService.findAll();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: number) {
