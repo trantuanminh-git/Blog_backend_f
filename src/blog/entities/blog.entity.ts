@@ -1,6 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Likes } from 'src/like/entities/like.entity';
+import { Notification } from 'src/notification/entities/notification.entity';
+import { Rating } from 'src/rating/entities/rating.entity';
 import { Tag } from 'src/tag/entities/tag.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
@@ -8,6 +10,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   OneToMany,
   ManyToMany,
@@ -47,6 +50,9 @@ export class Blog {
   @Column({ default: 0 })
   view: number;
 
+  @Column()
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.blogs)
   user: User;
 
@@ -68,8 +74,20 @@ export class Blog {
   @Column({ default: 0 })
   cmtCount: number;
 
+  @Column()
+  averageRating: number;
+
   @Column('simple-json')
   shares: { [key: string]: number };
+  @OneToMany(() => Rating, (rating: Rating) => rating.blog, { cascade: true })
+  ratings: Rating[];
+
+  @OneToMany(
+    () => Notification,
+    (notification: Notification) => notification.blog,
+    { cascade: true },
+  )
+  notifications: Notification[];
 
   constructor(title: string, content: string, tags: Tag[], user: User) {
     this.title = title;

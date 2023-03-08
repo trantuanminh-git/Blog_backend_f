@@ -30,7 +30,7 @@ export class Comment {
   @ManyToOne('User', (user: User) => user.comments, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
   @Column('int')
@@ -39,7 +39,7 @@ export class Comment {
   @ManyToOne('Comment', (comment: Comment) => comment.comments, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'parentId', referencedColumnName: 'id' })
   comment: Comment;
 
   @AutoMap()
@@ -49,9 +49,9 @@ export class Comment {
   @ManyToOne('Blog', (blog: Blog) => blog.comments, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'blogId', referencedColumnName: 'id' })
   blog: Blog;
 
-  @Column('int')
+  @Column()
   parentId: number;
 }

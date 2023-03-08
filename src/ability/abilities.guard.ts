@@ -34,12 +34,15 @@ export class PoliciesGuard implements CanActivate {
       email: 'email2@gmail.com',
       username: 'minhtran2',
       biography: 'mybio2',
+      roleId: 1,
       role: new Role('blogger'),
       password: 'abc',
       refreshToken: 'abc',
       blogs: [],
       likes: [],
       comments: [],
+      ratings: [],
+      notifications: [],
     };
     const ability = this.caslAbilityFactory.defineAbility(user1);
     // console.log(ability);

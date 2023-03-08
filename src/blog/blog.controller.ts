@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Ip,
+  Query,
 } from '@nestjs/common';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
 import { PoliciesGuard } from 'src/ability/abilities.guard';
@@ -49,12 +50,27 @@ export class BlogController {
   @Get(':id')
   findOne(@Param('id') id: string, @Ip() ip: string) {
     console.log(ip);
-    return this.blogService.findById(+id, ip);
+    return this.blogService.findById(parseInt(id), ip);
   }
 
   @Get('get-blog-by-tag/:tagName')
   findByTag(@Param('tagName') tagName: string): Promise<Blog[]> {
     return this.blogService.findByTag(tagName);
+  }
+
+  /**
+   * compute average rating blog
+   * GET /blogs/:id/average-rating
+   * @param id id blog
+   * @returns average rating blog
+   */
+  @Get(':id/average-rating')
+  async getAverageRating(@Param('id') id: string): Promise<number> {
+    const averageRating = await this.blogService.calculateAverageRating(
+      parseInt(id),
+    );
+
+    return averageRating;
   }
 
   @UseGuards(AtGuard)

@@ -2,14 +2,16 @@ import { AutoMap } from '@automapper/classes';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Blog } from 'src/blog/entities/blog.entity';
 import { Likes } from 'src/like/entities/like.entity';
+import { Notification } from 'src/notification/entities/notification.entity';
+import { Rating } from 'src/rating/entities/rating.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -46,8 +48,11 @@ export class User {
   @AutoMap()
   refreshToken: string;
 
+  @Column()
+  roleId: number;
+
   @AutoMap()
-  @OneToOne(() => Role)
+  @ManyToOne(() => Role, { cascade: true })
   @JoinColumn()
   role: Role;
 
@@ -62,6 +67,16 @@ export class User {
   @AutoMap()
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
+  @OneToMany(() => Rating, (rating: Rating) => rating.userId, { cascade: true })
+  ratings: Rating[];
+
+  @AutoMap()
+  @OneToMany(
+    () => Notification,
+    (notification: Notification) => notification.userId,
+    { cascade: true },
+  )
+  notifications: Notification[];
 
   constructor(
     email: string,
