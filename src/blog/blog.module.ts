@@ -7,7 +7,7 @@ import { UserService } from 'src/user/user.service';
 import { UserModule } from 'src/user/user.module';
 import { TagModule } from 'src/tag/tag.module';
 import { AbilityModule } from 'src/ability/ability.module';
-
+import { RatingModule } from 'src/rating/rating.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Blog]),
@@ -15,6 +15,7 @@ import { AbilityModule } from 'src/ability/ability.module';
     TagModule,
     AbilityModule,
     CacheModule.register(),
+    RatingModule
   ],
   controllers: [BlogController],
   providers: [BlogService],

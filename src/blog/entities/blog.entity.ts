@@ -43,6 +43,9 @@ export class Blog {
   @Column()
   userId: number
 
+  @Column()
+  averageRating: number;
+
   @ManyToOne(() => User, (user) => user.blogs)
   user: User;
 

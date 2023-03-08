@@ -15,6 +15,7 @@ import { PoliciesGuard } from 'src/ability/abilities.guard';
 import { Action } from 'src/ability/ability.factory/ability.factory';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { AtGuard } from 'src/common/guards/at.guard';
+import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { User } from 'src/user/entities/user.entity';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -58,6 +59,40 @@ export class BlogController {
     return this.blogService.findByTag(tagName);
   }
 
+  @UseGuards(AtGuard)
+  @Post(':id/rating')
+  ratingBlog(
+    @Param('id') blogId: number,
+    @GetCurrentUserId() userId: number,
+    @Body() createRatingDto: CreateBlogDto) {
+    
+    return this.blogService.ratingBlog(createRatingDto, userId, blogId);
+    }
+
+  @UseGuards(AtGuard)
+  @Patch(':id/rating/:idRating')
+  updateRating(
+    @Param('id') blogId: string, 
+    @Param('idRating') idRating: string, 
+    @Body() updateRatingDto: UpdateRatingDto,
+    @GetCurrentUserId() userId: number
+    ) {
+    return this.blogService.updateRatingBlog( parseInt(blogId), parseInt(idRating), userId, updateRatingDto);
+  }
+
+
+  @Get(':id/rating')
+  async getRatingByStar(
+    @Query('star') star: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Param('id') blogId: string
+    ) {
+
+      limit = limit > 100 ? 100 : limit
+
+      return this.blogService.filterRatingByStar( parseInt(blogId), parseInt(star), page, limit);
+    }
 
   /**
    * compute average rating blog

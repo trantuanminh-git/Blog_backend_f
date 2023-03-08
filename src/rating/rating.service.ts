@@ -37,17 +37,19 @@ export class RatingService {
                 .getOne()
   }
 
-  async update(id: number, updateRatingDto: UpdateRatingDto, userId: number): Promise<Rating> {
-    const rating = await this.ratingRepository.findOneBy({id: id, userId: userId})
+  async update(id: number, blogId: number, updateRatingDto: UpdateRatingDto, userId: number): Promise<Rating> {
+    const oldRating = await this.ratingRepository.findOneBy({id: id, userId: userId, blogId: blogId})
 
-    if (!rating) {
+    if (!oldRating) {
       throw new HttpException("This rating doesn't exists.", HttpStatus.BAD_REQUEST);
     }
 
-    rating.star = updateRatingDto.star;
-    rating.updatedAt = new Date()
+    oldRating.star = updateRatingDto.star;
+    oldRating.updatedAt = new Date()
 
-    return await this.ratingRepository.save(rating);
+    await this.ratingRepository.save(oldRating);
+
+    return oldRating;
   }
 
   async remove(id: number, userId: number): Promise<Rating> {
