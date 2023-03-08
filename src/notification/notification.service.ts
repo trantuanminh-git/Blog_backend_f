@@ -17,23 +17,27 @@ export class NotificationService {
   async findNotificationsByUserId(userId: number): Promise<Notification[]> {
     return await this.notificationRepository.find({
       where: {
-        userId: userId
+        userId: userId,
       },
       order: {
-        createdAt: 'DESC'
-      }
-    })
+        createdAt: 'DESC',
+      },
+    });
   }
 
   findAll() {
     return `This action returns all notification`;
   }
 
-  async update(id: number, updateNotificationDto: UpdateNotificationDto): Promise<any> {
+  async update(
+    id: number,
+    updateNotificationDto: UpdateNotificationDto,
+  ): Promise<any> {
     const notification = await this.notificationRepository.update(
-      { id},
-      { content: updateNotificationDto.content})
-    
+      { id },
+      { content: updateNotificationDto.content },
+    );
+
     return notification;
   }
 

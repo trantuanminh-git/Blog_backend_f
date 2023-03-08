@@ -1,6 +1,12 @@
 import { Blog } from 'src/blog/entities/blog.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 
 export enum NotificationType {
   LIKE = 'like',
@@ -14,53 +20,49 @@ export class Notification {
   id: number;
 
   @Column()
-  type: NotificationType
+  type: NotificationType;
 
   @Column()
-  content: string
+  content: string;
 
   @Column()
-  isRead: boolean
+  isRead: boolean;
 
   @Column('datetime')
-  createdAt: Date
+  createdAt: Date;
 
   @Column('datetime')
-  updatedAt: Date
+  updatedAt: Date;
 
   @Column('int')
-  userId: number
+  userId: number;
 
   @ManyToOne(() => User, (user: User) => user.notifications, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
-  @JoinColumn(
-    { 
-      name: "userID" ,
-      referencedColumnName: "id"
-    })
+  @JoinColumn({
+    name: 'userId',
+    referencedColumnName: 'id',
+  })
   user: User;
 
-
   @Column('int')
-  blogId: number
+  blogId: number;
 
-  @ManyToOne(() => Blog, ( blog: Blog) =>  blog.notifications, {
-    onDelete: 'CASCADE'
+  @ManyToOne(() => Blog, (blog: Blog) => blog.notifications, {
+    onDelete: 'CASCADE',
   })
-  @JoinColumn(
-    { 
-      name: "blogId" , 
-      referencedColumnName: 'id'
-    })
+  @JoinColumn({
+    name: 'blogId',
+    referencedColumnName: 'id',
+  })
   blog: Blog;
 
-  constructor( type: NotificationType, content, createdAt, userId, blogId) {
-    this.type = type
-    this.content = content
-    this.createdAt = createdAt
-    this.userId = userId
-    this.blogId = blogId
-
+  constructor(type: NotificationType, content, createdAt, userId, blogId) {
+    this.type = type;
+    this.content = content;
+    this.createdAt = createdAt;
+    this.userId = userId;
+    this.blogId = blogId;
   }
 }

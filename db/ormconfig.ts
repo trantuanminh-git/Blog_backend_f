@@ -13,7 +13,7 @@ export const config: DataSourceOptions = {
   //   synchronize: true,
   logging: false,
   entities: ['dist/src/**/*.entity.js'],
-  migrations: ['dist/db/migrations/*.js'],
+  migrations: ['dist/db/migration/*.js'],
 };
 
 const configOrm = new DataSource(config);

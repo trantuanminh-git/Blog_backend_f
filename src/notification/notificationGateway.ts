@@ -5,7 +5,6 @@ import { Server } from 'socket.io';
 export class NotificationGateway {
   @WebSocketServer()
   server: Server;
-
   sendNotificationToUser(userId: number, message: string): void {
     this.server.to(`user_${userId}`).emit('notification', message);
   }

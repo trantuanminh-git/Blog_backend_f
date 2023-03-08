@@ -1,6 +1,12 @@
 import { Blog } from 'src/blog/entities/blog.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity('rating')
 export class Rating {
@@ -8,44 +14,36 @@ export class Rating {
   id: number;
 
   @Column('int')
-  star: number
+  star: number;
 
   @Column('datetime')
-  createdAt: Date
+  createdAt: Date;
 
   @Column('datetime')
-  updatedAt: Date
+  updatedAt: Date;
 
   @Column('int')
-  userId: number
+  userId: number;
 
   @ManyToOne(() => User, (user: User) => user.ratings, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
-  @JoinColumn(
-    { name: "userId" ,
-      referencedColumnName: 'id'
-    })
+  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
   @Column('int')
-  blogId: number
+  blogId: number;
 
-  @ManyToOne(() => Blog, ( blog: Blog) =>  blog.ratings, {
-    onDelete: 'CASCADE'
+  @ManyToOne(() => Blog, (blog: Blog) => blog.ratings, {
+    onDelete: 'CASCADE',
   })
-  @JoinColumn({name: "blogId"})
+  @JoinColumn({ name: 'blogId' })
   blog: Blog;
 
-  constructor(
-    star: number,
-    createdAt: Date,
-    userId: number,
-    blogId: number
-    ) {
-    this.star = star
-    this.createdAt = createdAt
-    this.userId = userId
-    this.blogId = blogId
+  constructor(star: number, createdAt: Date, userId: number, blogId: number) {
+    this.star = star;
+    this.createdAt = createdAt;
+    this.userId = userId;
+    this.blogId = blogId;
   }
 }

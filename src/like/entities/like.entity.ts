@@ -19,7 +19,7 @@ export class Likes {
   @ManyToOne('User', (user: User) => user.likes, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
   @Column('int')
@@ -28,6 +28,6 @@ export class Likes {
   @ManyToOne('User', (blog: Blog) => blog.likes, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'blogId', referencedColumnName: 'id' })
   blog: Blog;
 }

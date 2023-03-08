@@ -58,7 +58,6 @@ export class BlogController {
     return this.blogService.findByTag(tagName);
   }
 
-
   /**
    * compute average rating blog
    * GET /blogs/:id/average-rating

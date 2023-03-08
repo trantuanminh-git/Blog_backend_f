@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
@@ -13,9 +23,9 @@ import { BlogService } from 'src/blog/blog.service';
 export class RatingController {
   constructor(
     private readonly ratingService: RatingService,
-    private notificationService: NotificationService,    
+    private notificationService: NotificationService,
     private blogService: BlogService,
-    private notificationGateway: NotificationGateway
+    private notificationGateway: NotificationGateway,
   ) {}
 
   @UseGuards(AtGuard)
@@ -23,15 +33,21 @@ export class RatingController {
   async create(
     @Param('id') blogId: number,
     @GetCurrentUserId() userId: number,
-    @Body() createRatingDto: CreateRatingDto) {
-    
+    @Body() createRatingDto: CreateRatingDto,
+  ) {
     await this.ratingService.create(createRatingDto, userId, blogId);
 
     const ownBlogId = await this.blogService.findUserIdByBlogId(blogId);
 
-    const message = `Your post received a new rate.`
+    const message = `Your post received a new rate.`;
 
-    const notification = new Notification(NotificationType.RATING, message, new Date, ownBlogId, blogId);
+    const notification = new Notification(
+      NotificationType.RATING,
+      message,
+      new Date(),
+      ownBlogId,
+      blogId,
+    );
 
     await this.notificationService.create(notification);
 
@@ -43,12 +59,16 @@ export class RatingController {
     @Query('star') star: string,
     @Query('page') page = 1,
     @Query('limit') limit = 10,
-    @Param('id') blogId: string
-    ) {
+    @Param('id') blogId: string,
+  ) {
+    limit = limit > 100 ? 100 : limit;
 
-      limit = limit > 100 ? 100 : limit
-
-    return this.ratingService.searchRatingByStar( parseInt(blogId), parseInt(star), page, limit);
+    return this.ratingService.searchRatingByStar(
+      parseInt(blogId),
+      parseInt(star),
+      page,
+      limit,
+    );
   }
 
   @Get('rating/:id')
@@ -59,19 +79,16 @@ export class RatingController {
   @UseGuards(AtGuard)
   @Patch('rating/:id')
   update(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() updateRatingDto: UpdateRatingDto,
-    @GetCurrentUserId() userId: number
-    ) {
+    @GetCurrentUserId() userId: number,
+  ) {
     return this.ratingService.update(+id, updateRatingDto, userId);
   }
 
   @UseGuards(AtGuard)
   @Delete('rating')
-  remove(
-    @Query('id') id: string,
-    @GetCurrentUserId() userId: number
-    ) {
+  remove(@Query('id') id: string, @GetCurrentUserId() userId: number) {
     return this.ratingService.remove(+id, userId);
   }
 }
