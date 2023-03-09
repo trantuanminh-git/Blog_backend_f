@@ -48,7 +48,7 @@ export class User {
   @AutoMap()
   refreshToken: string;
 
-  @Column()
+  @Column({ nullable: true })
   roleId: number;
 
   @AutoMap()

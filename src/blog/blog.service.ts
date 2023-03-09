@@ -184,7 +184,7 @@ export class BlogService {
   async findByTitle(title: string): Promise<[Blog[], number]> {
     return await this.blogRepository.findAndCount({
       order: {
-        created_at: 'asc',
+        createdAt: 'asc',
       },
       where: {
         title: Like('%' + title + '%'),

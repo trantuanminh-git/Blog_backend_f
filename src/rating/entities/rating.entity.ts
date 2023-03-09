@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('rating')
@@ -16,11 +18,18 @@ export class Rating {
   @Column('int')
   star: number;
 
-  @Column('datetime')
-  createdAt: Date;
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
+  createdAt: Date; // Creation date
 
-  @Column('datetime')
-  updatedAt: Date;
+  @UpdateDateColumn({
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    type: 'timestamp',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
+  updatedAt: Date; // Last updated date
 
   @Column('int')
   userId: number;
@@ -40,9 +49,8 @@ export class Rating {
   @JoinColumn({ name: 'blogId' })
   blog: Blog;
 
-  constructor(star: number, createdAt: Date, userId: number, blogId: number) {
+  constructor(star: number, userId: number, blogId: number) {
     this.star = star;
-    this.createdAt = createdAt;
     this.userId = userId;
     this.blogId = blogId;
   }

@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export enum NotificationType {
@@ -28,11 +30,18 @@ export class Notification {
   @Column()
   isRead: boolean;
 
-  @Column('datetime')
-  createdAt: Date;
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
+  createdAt: Date; // Creation date
 
-  @Column('datetime')
-  updatedAt: Date;
+  @UpdateDateColumn({
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    type: 'timestamp',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
+  updatedAt: Date; // Last updated date
 
   @Column('int')
   userId: number;

@@ -25,7 +25,7 @@ export class RatingService {
       throw new HttpException('User just one rating.', HttpStatus.BAD_REQUEST);
     }
 
-    const rating = new Rating(createRatingDto.star, new Date(), userId, blogId);
+    const rating = new Rating(createRatingDto.star, userId, blogId);
     const saveRating = this.ratingRepository.save(rating);
     return saveRating;
   }
@@ -60,7 +60,6 @@ export class RatingService {
     }
 
     oldRating.star = updateRatingDto.star;
-    oldRating.updatedAt = new Date();
 
     await this.ratingRepository.save(oldRating);
 

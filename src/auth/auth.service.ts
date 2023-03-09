@@ -12,6 +12,7 @@ import { User } from 'src/user/entities/user.entity';
 import { IsNull, Not, Repository } from 'typeorm';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private readonly userService: UserService,
   ) {}
   async signupLocal(dto: CreateUserDto): Promise<Tokens> {
     const hash = await this.hashData(dto.password);
@@ -34,7 +36,7 @@ export class AuthService {
       );
     }
     // create new user
-    const newUser = await this.userRepository.create(dto);
+    const newUser = await this.userService.create(dto);
     newUser.password = hash;
     console.log(newUser);
     await this.userRepository.save(newUser);

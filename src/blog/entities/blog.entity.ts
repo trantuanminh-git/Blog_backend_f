@@ -37,14 +37,14 @@ export class Blog {
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   }) // You don't need to set this column - it will be automatically set
-  created_at: Date; // Creation date
+  createdAt: Date; // Creation date
 
   @UpdateDateColumn({
+    default: () => 'CURRENT_TIMESTAMP(6)',
     type: 'timestamp',
     onUpdate: 'CURRENT_TIMESTAMP(6)',
-    nullable: true,
   }) // You don't need to set this column - it will be automatically set
-  updated_at: Date; // Last updated date
+  updatedAt: Date; // Last updated date
 
   @Column({ default: 0 })
   view: number;
@@ -53,7 +53,7 @@ export class Blog {
   @IsNotEmpty()
   userId: number;
 
-  @Column()
+  @Column({ nullable: true })
   averageRating: number;
 
   @ManyToOne(() => User, (user) => user.blogs)
