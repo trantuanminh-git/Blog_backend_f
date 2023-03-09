@@ -57,8 +57,10 @@ export class BlogController {
 
   @UseGuards(AtGuard) // user need to login to like blog
   @Post(':id/like')
-  like(@GetCurrentUserId() userId: number, @Param() id: number): Promise<Blog> {
-    console.log(userId);
+  like(
+    @GetCurrentUserId() userId: number,
+    @Param('id') id: number,
+  ): Promise<Blog> {
     return this.blogService.likeBlog(id, userId);
   }
 

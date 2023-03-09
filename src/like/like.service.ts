@@ -27,16 +27,14 @@ export class LikeService {
   }
 
   async findOneByBlogAndUser(userId: number, blogId: number) {
-    return await this.likeRepository.findOne({
-      where: {
-        userId: userId,
-        blogId: blogId,
-      },
+    return await this.likeRepository.findOneBy({
+      userId: userId,
+      blogId: blogId,
     });
   }
 
   async findOne(id: number) {
-    return this.likeRepository
+    return await this.likeRepository
       .createQueryBuilder('like')
       .where('like.id = :id', { id: id })
       .leftJoinAndSelect('like.blog', 'blog')
@@ -46,7 +44,10 @@ export class LikeService {
   }
 
   async remove(userId: number, blogId: number): Promise<Likes> {
-    const like = await this.findOneByBlogAndUser(userId, blogId);
+    const like = await await this.likeRepository.findOneBy({
+      userId: userId,
+      blogId: blogId,
+    });
     if (!like) {
       throw new HttpException(
         "This like doesn't exists.",
