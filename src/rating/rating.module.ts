@@ -8,7 +8,7 @@ import { BlogModule } from 'src/blog/blog.module';
 import { NotificationGateway } from 'src/notification/notificationGateway';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Rating]), NotificationModule, BlogModule],
+  imports: [TypeOrmModule.forFeature([Rating]), NotificationModule],
   controllers: [RatingController],
   providers: [RatingService],
   exports: [RatingService],
