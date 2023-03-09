@@ -10,6 +10,7 @@ import { AbilityModule } from 'src/ability/ability.module';
 import { LikeModule } from 'src/like/like.module';
 import { CommentModule } from 'src/comment/comment.module';
 
+import { RatingModule } from 'src/rating/rating.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Blog]),
@@ -19,6 +20,7 @@ import { CommentModule } from 'src/comment/comment.module';
     CommentModule,
     AbilityModule,
     CacheModule.register(),
+    RatingModule
   ],
   controllers: [BlogController],
   providers: [BlogService],

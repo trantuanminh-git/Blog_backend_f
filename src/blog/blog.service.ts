@@ -26,6 +26,8 @@ import { Likes } from 'src/like/entities/like.entity';
 import { CommentService } from 'src/comment/comment.service';
 import { LikeService } from 'src/like/like.service';
 import { Rating } from 'src/rating/entities/rating.entity';
+import { RatingService } from 'src/rating/rating.service';
+import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 
 @Injectable()
 export class BlogService {
@@ -38,6 +40,7 @@ export class BlogService {
     private readonly tagService: TagService,
     private readonly userService: UserService,
     private abilityFactory: AbilityFactory,
+    private readonly ratingService: RatingService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -83,6 +86,9 @@ export class BlogService {
       user,
     );
     await this.addTagToBlog(createBlogDto.tags, newBlog);
+    console.log(newBlog)
+
+    // newBlog.averageRating = this.calculateAverageRating()
 
     await this.blogRepository.save(newBlog);
 
@@ -350,8 +356,12 @@ export class BlogService {
       throw new Error('Blog not found');
     }
 
-    const ratings = blog.ratings.map((rating) => rating.star);
-    const sum = ratings.reduce((a, b) => a + b, 0);
+    if(blog.ratings.length == 0) {
+      throw new Error('Blog have not rating');
+    }
+
+    const ratings = blog.ratings.map(rating => rating.star);
+    const sum = ratings.reduce((a, b) => a+b, 0);
     const average = sum / ratings.length;
 
     return average;
@@ -368,5 +378,53 @@ export class BlogService {
     }
 
     return blog.userId;
+  }
+
+  async ratingBlog(createRatingDto, userId, blogId): Promise<Blog> {
+
+    const blog = await this.blogRepository.findOneBy({id: blogId});
+
+    if(!blog) {
+      throw new Error('Blog not found');
+    }
+
+    const rating = await this.ratingService.create(createRatingDto, userId, blogId)
+
+    if(!blog.averageRating) {
+      blog.averageRating = rating.star;
+    } else {
+      let sizeRating = blog.ratings.length - 1
+      let avg = blog.averageRating
+      const sum = avg*sizeRating + rating.star;
+
+      blog.averageRating = sum/(sizeRating+1)
+    }
+
+    const saveBlog = await this.blogRepository.save(blog);
+
+    return saveBlog;
+  }
+
+  async updateRatingBlog( blogId, idRating, userId: number, updateRatingDto: UpdateRatingDto): Promise<Blog> {
+    const blog = await this.blogRepository.findOneBy({id: blogId});
+    if(!blog) {
+      throw new Error('Blog not found');
+    }
+
+    const oldRating = await this.ratingService.update(idRating, blogId, updateRatingDto, userId);
+
+    let sizeRating = blog.ratings.length;
+    
+    let avg = blog.averageRating;
+
+    const sum = avg*sizeRating - oldRating.star + updateRatingDto.star;
+
+    blog.averageRating = sum/sizeRating;
+    const saveBlog = await this.blogRepository.save(blog)
+    return saveBlog;
+  }
+
+  async filterRatingByStar( blogId, star, page, limit): Promise<[Rating[], number]> {
+    return await this.ratingService.searchRatingByStar(blogId, star, page, limit);
   }
 }
