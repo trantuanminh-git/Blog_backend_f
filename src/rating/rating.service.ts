@@ -40,15 +40,27 @@ export class RatingService {
       .getOne();
   }
 
-  async update(id: number, blogId: number, updateRatingDto: UpdateRatingDto, userId: number): Promise<Rating> {
-    const oldRating = await this.ratingRepository.findOneBy({id: id, userId: userId, blogId: blogId})
+  async update(
+    id: number,
+    blogId: number,
+    updateRatingDto: UpdateRatingDto,
+    userId: number,
+  ): Promise<Rating> {
+    const oldRating = await this.ratingRepository.findOneBy({
+      id: id,
+      userId: userId,
+      blogId: blogId,
+    });
 
     if (!oldRating) {
-      throw new HttpException("This rating doesn't exists.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "This rating doesn't exists.",
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     oldRating.star = updateRatingDto.star;
-    oldRating.updatedAt = new Date()
+    oldRating.updatedAt = new Date();
 
     await this.ratingRepository.save(oldRating);
 

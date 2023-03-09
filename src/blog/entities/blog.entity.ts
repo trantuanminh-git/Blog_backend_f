@@ -77,9 +77,6 @@ export class Blog {
   @Column({ default: 0 })
   cmtCount: number;
 
-  @Column({ nullable: true })
-  averageRating: number;
-
   @Column({ default: 0 })
   shareCount: number;
 

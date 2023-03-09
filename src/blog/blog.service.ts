@@ -86,7 +86,7 @@ export class BlogService {
       user,
     );
     await this.addTagToBlog(createBlogDto.tags, newBlog);
-    console.log(newBlog)
+    console.log(newBlog);
 
     // newBlog.averageRating = this.calculateAverageRating()
 
@@ -356,12 +356,12 @@ export class BlogService {
       throw new Error('Blog not found');
     }
 
-    if(blog.ratings.length == 0) {
+    if (blog.ratings.length == 0) {
       throw new Error('Blog have not rating');
     }
 
-    const ratings = blog.ratings.map(rating => rating.star);
-    const sum = ratings.reduce((a, b) => a+b, 0);
+    const ratings = blog.ratings.map((rating) => rating.star);
+    const sum = ratings.reduce((a, b) => a + b, 0);
     const average = sum / ratings.length;
 
     return average;
@@ -381,23 +381,26 @@ export class BlogService {
   }
 
   async ratingBlog(createRatingDto, userId, blogId): Promise<Blog> {
+    const blog = await this.blogRepository.findOneBy({ id: blogId });
 
-    const blog = await this.blogRepository.findOneBy({id: blogId});
-
-    if(!blog) {
+    if (!blog) {
       throw new Error('Blog not found');
     }
 
-    const rating = await this.ratingService.create(createRatingDto, userId, blogId)
+    const rating = await this.ratingService.create(
+      createRatingDto,
+      userId,
+      blogId,
+    );
 
-    if(!blog.averageRating) {
+    if (!blog.averageRating) {
       blog.averageRating = rating.star;
     } else {
-      let sizeRating = blog.ratings.length - 1
-      let avg = blog.averageRating
-      const sum = avg*sizeRating + rating.star;
+      const sizeRating = blog.ratings.length - 1;
+      const avg = blog.averageRating;
+      const sum = avg * sizeRating + rating.star;
 
-      blog.averageRating = sum/(sizeRating+1)
+      blog.averageRating = sum / (sizeRating + 1);
     }
 
     const saveBlog = await this.blogRepository.save(blog);
@@ -405,26 +408,46 @@ export class BlogService {
     return saveBlog;
   }
 
-  async updateRatingBlog( blogId, idRating, userId: number, updateRatingDto: UpdateRatingDto): Promise<Blog> {
-    const blog = await this.blogRepository.findOneBy({id: blogId});
-    if(!blog) {
+  async updateRatingBlog(
+    blogId,
+    idRating,
+    userId: number,
+    updateRatingDto: UpdateRatingDto,
+  ): Promise<Blog> {
+    const blog = await this.blogRepository.findOneBy({ id: blogId });
+    if (!blog) {
       throw new Error('Blog not found');
     }
 
-    const oldRating = await this.ratingService.update(idRating, blogId, updateRatingDto, userId);
+    const oldRating = await this.ratingService.update(
+      idRating,
+      blogId,
+      updateRatingDto,
+      userId,
+    );
 
-    let sizeRating = blog.ratings.length;
-    
-    let avg = blog.averageRating;
+    const sizeRating = blog.ratings.length;
 
-    const sum = avg*sizeRating - oldRating.star + updateRatingDto.star;
+    const avg = blog.averageRating;
 
-    blog.averageRating = sum/sizeRating;
-    const saveBlog = await this.blogRepository.save(blog)
+    const sum = avg * sizeRating - oldRating.star + updateRatingDto.star;
+
+    blog.averageRating = sum / sizeRating;
+    const saveBlog = await this.blogRepository.save(blog);
     return saveBlog;
   }
 
-  async filterRatingByStar( blogId, star, page, limit): Promise<[Rating[], number]> {
-    return await this.ratingService.searchRatingByStar(blogId, star, page, limit);
+  async filterRatingByStar(
+    blogId,
+    star,
+    page,
+    limit,
+  ): Promise<[Rating[], number]> {
+    return await this.ratingService.searchRatingByStar(
+      blogId,
+      star,
+      page,
+      limit,
+    );
   }
 }

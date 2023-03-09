@@ -20,7 +20,7 @@ import { RatingModule } from 'src/rating/rating.module';
     CommentModule,
     AbilityModule,
     CacheModule.register(),
-    RatingModule
+    RatingModule,
   ],
   controllers: [BlogController],
   providers: [BlogService],

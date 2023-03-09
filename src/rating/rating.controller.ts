@@ -27,8 +27,8 @@ export class RatingController {
   async create(
     @Param('id') blogId: number,
     @GetCurrentUserId() userId: number,
-    @Body() createRatingDto: CreateRatingDto) {
-    
+    @Body() createRatingDto: CreateRatingDto,
+  ) {
     return this.ratingService.create(createRatingDto, userId, blogId);
 
     // const ownBlogId = await this.blogService.findUserIdByBlogId(blogId);
@@ -65,9 +65,9 @@ export class RatingController {
   update(
     @Param('id') id: string,
     @Body() updateRatingDto: UpdateRatingDto,
-    @GetCurrentUserId() userId: number
-    ) {
-    return this.ratingService.update(1 ,+id, updateRatingDto, userId);
+    @GetCurrentUserId() userId: number,
+  ) {
+    return this.ratingService.update(1, +id, updateRatingDto, userId);
   }
 
   @UseGuards(AtGuard)
