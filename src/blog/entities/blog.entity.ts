@@ -53,6 +53,9 @@ export class Blog {
   @Column()
   userId: number;
 
+  @Column()
+  averageRating: number;
+
   @ManyToOne(() => User, (user) => user.blogs)
   user: User;
 
@@ -73,9 +76,6 @@ export class Blog {
 
   @Column({ default: 0 })
   cmtCount: number;
-
-  @Column()
-  averageRating: number;
 
   @Column('simple-json')
   shares: { [key: string]: number };
