@@ -21,7 +21,7 @@ export class LikeController {
   }
 
   @Get()
-  findAll(@Query('blog') userId: number, @Query('blog') blogId: number) {
+  findAll(@Query('blog') userId: number, blogId: number) {
     if (!blogId && !userId) return this.likeService.findAll();
     return this.likeService.findOneByBlogAndUser(userId, blogId);
   }
@@ -31,8 +31,8 @@ export class LikeController {
     return this.likeService.findOne(id);
   }
 
-  @Delete(':id')
-  remove(@Body() userId: number, blogId: number) {
+  @Delete()
+  remove(@Query('blog') userId: number, blogId: number) {
     return this.likeService.remove(userId, blogId);
   }
 }

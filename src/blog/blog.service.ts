@@ -262,6 +262,7 @@ export class BlogService {
     try {
       const blog = await this.blogRepository.findOneBy({ id: id });
       const like = await this.likeService.findOneByBlogAndUser(userId, id);
+      console.log(like);
       // check if userId has already liked post
       if (!like) {
         this.likeService.create({}, userId, id);
@@ -277,49 +278,62 @@ export class BlogService {
   }
 
   async commentToBlog(
-    content: string,
-    commentId: number,
-    userId: number,
     id: number,
+    userId: number,
+    content: string,
     parentId?: number,
   ): Promise<Blog> {
     try {
       const blog = await this.blogRepository.findOneBy({ id: id });
-      const comment = await this.commentService.findOne(commentId);
-      const subcomment = await this.commentService.findOneByParent(commentId);
-      if (!comment) {
-        this.commentService.create({ content }, userId, id, parentId);
-        blog.cmtCount += 1;
-      } else {
-        if (!subcomment) {
-          this.commentService.remove(commentId);
-        } else {
-          this.commentService.update(commentId, {
-            content: 'This comment has been deleted',
-          });
-        }
-        blog.cmtCount -= 1;
-      }
-      return await this.blogRepository.save(blog);
+      this.commentService.create({ content }, userId, id, parentId);
+      blog.cmtCount += 1;
+      await this.blogRepository.save(blog);
+      return await this.blogRepository.findOne({
+        where: { id: id },
+        relations: { comments: true },
+      });
     } catch (err) {
       throw err;
     }
   }
 
-  async shareBlog(id: number): Promise<Blog> {
-    const blog = await this.blogRepository.findOne({ where: { id: id } });
-
-    if (!blog) {
-      throw new Error('Blog post not found');
-    }
-
-    // let currentShares = blog.shares;
-    // currentShares = (currentShares || 0) + 1;
-
-    return this.blogRepository.save({
-      ...blog,
-      // shares: currentShares,
+  async updateComment(
+    id: number,
+    commentId: number,
+    content: string,
+  ): Promise<Blog> {
+    await this.commentService.update(commentId, { content });
+    return await this.blogRepository.findOne({
+      where: { id: id },
+      relations: { comments: true },
     });
+  }
+
+  async deleteComment(id: number, commentId: number): Promise<Blog> {
+    const blog = await this.blogRepository.findOneBy({ id: id });
+    const subcomment = await this.commentService.findOneByParent(commentId);
+    if (!subcomment) {
+      this.commentService.remove(commentId);
+    } else {
+      this.commentService.update(commentId, {
+        content: 'This comment has been deleted',
+      });
+    }
+    blog.cmtCount -= 1;
+    return await this.blogRepository.findOne({
+      where: { id: id },
+      relations: { comments: true },
+    });
+  }
+
+  async shareBlog(id: number): Promise<Blog> {
+    try {
+      const blog = await this.blogRepository.findOneBy({ id: id });
+      blog.shareCount += 1;
+      return await this.blogRepository.save(blog);
+    } catch (err) {
+      throw err;
+    }
   }
 
   async calculateAverageRating(blogId: number): Promise<number> {

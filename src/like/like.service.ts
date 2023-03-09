@@ -27,9 +27,11 @@ export class LikeService {
   }
 
   async findOneByBlogAndUser(userId: number, blogId: number) {
-    return await this.likeRepository.findOneBy({
-      userId: userId,
-      blogId: blogId,
+    return await this.likeRepository.findOne({
+      where: {
+        userId: userId,
+        blogId: blogId,
+      },
     });
   }
 

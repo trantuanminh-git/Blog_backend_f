@@ -9,6 +9,7 @@ import {
   UseGuards,
   Ip,
   Query,
+  Put,
 } from '@nestjs/common';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
 import { PoliciesGuard } from 'src/ability/abilities.guard';
@@ -51,6 +52,45 @@ export class BlogController {
   findOne(@Param('id') id: string, @Ip() ip: string) {
     console.log(ip);
     return this.blogService.findById(parseInt(id), ip);
+  }
+
+  @UseGuards(AtGuard) // user need to login to like blog
+  @Post(':id/like')
+  like(@GetCurrentUserId() userId: number, @Param() id: number): Promise<Blog> {
+    console.log(userId);
+    return this.blogService.likeBlog(id, userId);
+  }
+
+  @UseGuards(AtGuard) // user need to login to comment blog
+  @Post(':id/comment')
+  comment(
+    @GetCurrentUserId() userId: number,
+    @Param() id: number,
+    @Body() content: string,
+    @Body() parentId?: number,
+  ): Promise<Blog> {
+    return this.blogService.commentToBlog(id, userId, content, parentId);
+  }
+
+  @UseGuards(AtGuard) // user need to login to update comment blog
+  @Put(':id/comment')
+  updateComment(
+    @GetCurrentUserId() userId: number,
+    @Param() id: number,
+    @Body() commentId: number,
+    @Body() content: string,
+  ): Promise<Blog> {
+    return this.blogService.updateComment(id, commentId, content);
+  }
+
+  @UseGuards(AtGuard) // user need to login to delete comment blog
+  @Delete(':id/comment')
+  deleteComment(
+    @GetCurrentUserId() userId: number,
+    @Param() id: number,
+    @Body() commentId: number,
+  ): Promise<Blog> {
+    return this.blogService.deleteComment(id, commentId);
   }
 
   @Get('get-blog-by-tag/:tagName')

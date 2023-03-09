@@ -10,7 +10,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   JoinTable,
   OneToMany,
   ManyToMany,
@@ -18,7 +17,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { CreateBlogDto } from '../dto/create-blog.dto';
 
 @Entity('blog')
 export class Blog {
@@ -31,6 +29,7 @@ export class Blog {
   title: string;
 
   @Column()
+  @IsNotEmpty()
   @IsString()
   content: string;
 
@@ -42,8 +41,8 @@ export class Blog {
 
   @UpdateDateColumn({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
     onUpdate: 'CURRENT_TIMESTAMP(6)',
+    nullable: true,
   }) // You don't need to set this column - it will be automatically set
   updated_at: Date; // Last updated date
 
@@ -51,6 +50,7 @@ export class Blog {
   view: number;
 
   @Column()
+  @IsNotEmpty()
   userId: number;
 
   @ManyToOne(() => User, (user) => user.blogs)
@@ -68,17 +68,18 @@ export class Blog {
   likeCount: number;
 
   @AutoMap()
-  @OneToMany(() => Comment, (comment) => comment.blog)
+  @OneToMany(() => Comment, (comment) => comment.blog, { cascade: true })
   comments: Comment[];
 
   @Column({ default: 0 })
   cmtCount: number;
 
-  @Column()
+  @Column({ nullable: true })
   averageRating: number;
 
-  @Column('simple-json')
-  shares: { [key: string]: number };
+  @Column({ default: 0 })
+  shareCount: number;
+
   @OneToMany(() => Rating, (rating: Rating) => rating.blog, { cascade: true })
   ratings: Rating[];
 
