@@ -26,6 +26,10 @@ export class CommentService {
     return saveComment;
   }
 
+  async findAll() {
+    return await this.commentRepository.find();
+  }
+
   async findOne(id: number) {
     return this.commentRepository
       .createQueryBuilder('comment')

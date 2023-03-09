@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { CreateLikeDto } from './dto/create-like.dto';
@@ -19,18 +20,19 @@ export class LikeController {
     return this.likeService.create(createLikeDto, userId, blogId);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.likeService.findAll();
-  // }
+  @Get()
+  findAll(@Query('blog') userId: number, blogId: number) {
+    if (!blogId && !userId) return this.likeService.findAll();
+    return this.likeService.findOneByBlogAndUser(userId, blogId);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.likeService.findOne(id);
   }
 
-  @Delete(':id')
-  remove(@Body() userId: number, blogId: number) {
+  @Delete()
+  remove(@Query('blog') userId: number, blogId: number) {
     return this.likeService.remove(userId, blogId);
   }
 }

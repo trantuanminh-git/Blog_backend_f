@@ -52,6 +52,6 @@ export class Comment {
   @JoinColumn({ name: 'blogId', referencedColumnName: 'id' })
   blog: Blog;
 
-  @Column()
+  @Column({ nullable: true })
   parentId: number;
 }
