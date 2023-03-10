@@ -40,6 +40,10 @@ export class RatingService {
       .getOne();
   }
 
+  async countRatingByBlogId(blogId: number): Promise<number> {
+    return await this.ratingRepository.count({ where: {blogId: blogId} })
+  }
+
   async update(
     id: number,
     blogId: number,
@@ -84,6 +88,21 @@ export class RatingService {
     return rating;
   }
 
+  async removeRating(id: number): Promise<Rating> {
+    const rating = await this.ratingRepository.findOneBy({id: id});
+
+    if (!rating) {
+      throw new HttpException(
+        "This rating doesn't exists.",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await this.ratingRepository.delete({ id: id });
+
+    return rating;  
+  }
+  
   async searchRatingByStar(
     id: number,
     star: number,

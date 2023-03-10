@@ -371,9 +371,7 @@ export class BlogService {
     const blog = await this.blogRepository.findOneBy({ id: blogId });
 
     if (!blog) {
-      throw new HttpException(
-        "This blog doesn't exists.",
-        HttpStatus.BAD_REQUEST,
+      throw new HttpException(new Error("This blog doesn't exists"), HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -384,7 +382,7 @@ export class BlogService {
     const blog = await this.blogRepository.findOneBy({ id: blogId });
 
     if (!blog) {
-      throw new Error('Blog not found');
+      throw new HttpException(new Error("This blog doesn't exists"), HttpStatus.BAD_REQUEST)
     }
 
     const rating = await this.ratingService.create(
@@ -396,16 +394,22 @@ export class BlogService {
     if (!blog.averageRating) {
       blog.averageRating = rating.star;
     } else {
-      const sizeRating = blog.ratings.length - 1;
-      const avg = blog.averageRating;
-      const sum = avg * sizeRating + rating.star;
 
-      blog.averageRating = sum / (sizeRating + 1);
+      const sizeRating = await this.ratingService.countRatingByBlogId(blogId);
+
+      const avg = blog.averageRating;
+
+      const sum = avg * (sizeRating-1) + Number(rating.star);
+
+      blog.averageRating = sum/sizeRating;
     }
 
     const saveBlog = await this.blogRepository.save(blog);
 
-    return saveBlog;
+    return await this.blogRepository.findOne({
+      where: { id: blogId },
+      relations: { ratings: true },
+    });
   }
 
   async updateRatingBlog(
@@ -416,7 +420,7 @@ export class BlogService {
   ): Promise<Blog> {
     const blog = await this.blogRepository.findOneBy({ id: blogId });
     if (!blog) {
-      throw new Error('Blog not found');
+      throw new HttpException(new Error("This blog doesn't exists"), HttpStatus.BAD_REQUEST)
     }
 
     const oldRating = await this.ratingService.update(
@@ -425,17 +429,39 @@ export class BlogService {
       updateRatingDto,
       userId,
     );
-
-    const sizeRating = blog.ratings.length;
+    const sizeRating = await this.ratingService.countRatingByBlogId(blogId);
 
     const avg = blog.averageRating;
 
-    const sum = avg * sizeRating - oldRating.star + updateRatingDto.star;
+    const sum = avg * sizeRating - oldRating.star + Number(updateRatingDto.star);
 
     blog.averageRating = sum / sizeRating;
     const saveBlog = await this.blogRepository.save(blog);
-    return saveBlog;
+
+    return await this.blogRepository.findOne({
+      where: { id: blogId },
+      relations: { ratings: true },
+    });
   }
+
+  async deleteRating(
+    blogId,
+    idRating,
+    userId: number,
+  ): Promise<Blog> {
+    const blog = await this.blogRepository.findOneBy({ id: blogId });
+    if (!blog) {
+      throw new HttpException(new Error("This blog doesn't exists"), HttpStatus.BAD_REQUEST)
+    }
+
+    const rating = await this.ratingService.remove( idRating, userId);
+
+    return await this.blogRepository.findOne({
+      where: { id: blogId },
+      relations: { ratings: true },
+    });
+  }
+
 
   async filterRatingByStar(
     blogId,

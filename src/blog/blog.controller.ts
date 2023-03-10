@@ -27,20 +27,6 @@ import { Blog } from './entities/blog.entity';
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
-  @UseGuards(AtGuard) // user need to login to create blog
-  @Post()
-  create(
-    @GetCurrentUserId() userId: number,
-    @Body() createBlogDto: CreateBlogDto,
-  ): Promise<Blog> {
-    console.log(userId);
-    return this.blogService.create(userId, createBlogDto);
-  }
-
-  @Get()
-  async findAll(): Promise<Blog[]> {
-    return this.blogService.findAll();
-  }
   @Get('get-blog-by-title/:title')
   findByTitle(@Param('title') title: string): Promise<[Blog[], number]> {
     return this.blogService.findByTitle(title);
@@ -49,18 +35,11 @@ export class BlogController {
   // findByTitle(@Body() title: string): Promise<Blog[]> {
   //   return this.blogService.findByTitle(title);
   // }
-  @Get(':id')
-  findOne(@Param('id') id: string, @Ip() ip: string) {
-    console.log(ip);
-    return this.blogService.findById(parseInt(id), ip);
-  }
 
   @UseGuards(AtGuard) // user need to login to like blog
   @Post(':id/like')
-  like(
-    @GetCurrentUserId() userId: number,
-    @Param('id') id: number,
-  ): Promise<Blog> {
+  like(@GetCurrentUserId() userId: number, @Param() id: number): Promise<Blog> {
+    console.log(userId);
     return this.blogService.likeBlog(id, userId);
   }
 
@@ -112,10 +91,10 @@ export class BlogController {
   }
 
   @UseGuards(AtGuard)
-  @Patch(':id/rating/:idRating')
+  @Put(':id/rating')
   updateRating(
     @Param('id') blogId: string,
-    @Param('idRating') idRating: string,
+    @Query('idRating') idRating: string,
     @Body() updateRatingDto: UpdateRatingDto,
     @GetCurrentUserId() userId: number,
   ) {
@@ -125,6 +104,20 @@ export class BlogController {
       userId,
       updateRatingDto,
     );
+  }
+
+  @UseGuards(AtGuard)
+  @Delete(':id/rating')
+  deleteRating(
+    @Param('id') blogId: string,
+    @Query('idRating') idRating: string,
+    @GetCurrentUserId() userId: number,
+  ) {
+    return this.blogService.deleteRating(
+      parseInt(blogId),
+      parseInt(idRating),
+      userId
+      );
   }
 
   @Get(':id/rating')
@@ -159,6 +152,12 @@ export class BlogController {
     return averageRating;
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string, @Ip() ip: string) {
+    console.log(ip);
+    return this.blogService.findById(parseInt(id), ip);
+  }
+
   @UseGuards(AtGuard)
   @Patch(':id')
   update(
@@ -179,4 +178,20 @@ export class BlogController {
   ): Promise<Blog> {
     return this.blogService.remove(+id, curUserId);
   }
+
+  @UseGuards(AtGuard) // user need to login to create blog
+  @Post()
+  create(
+    @GetCurrentUserId() userId: number,
+    @Body() createBlogDto: CreateBlogDto,
+  ): Promise<Blog> {
+    console.log(userId);
+    return this.blogService.create(userId, createBlogDto);
+  }
+
+  @Get()
+  async findAll(): Promise<Blog[]> {
+    return this.blogService.findAll();
+  }
+
 }

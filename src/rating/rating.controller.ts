@@ -15,12 +15,15 @@ import { UpdateRatingDto } from './dto/update-rating.dto';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { AtGuard } from 'src/common/guards/at.guard';
 import { NotificationService } from 'src/notification/notification.service';
+import { NotificationType } from 'src/notification/entities/notification.entity';
+import { Notification } from 'src/notification/entities/notification.entity';
+import { NotificationGateway } from 'src/notification/notificationGateway';
 @Controller()
 export class RatingController {
-  constructor(private readonly ratingService: RatingService) {}
-  //private notificationService: NotificationService) {}
+  constructor(private readonly ratingService: RatingService,
+  private notificationService: NotificationService,
   // private blogService: BlogService,
-  // private notificationGateway: NotificationGateway,
+  private notificationGateway: NotificationGateway, ){}
 
   @UseGuards(AtGuard)
   @Post('rating/blog/:id')
@@ -72,7 +75,7 @@ export class RatingController {
 
   @UseGuards(AtGuard)
   @Delete('rating')
-  remove(@Query('id') id: string, @GetCurrentUserId() userId: number) {
-    return this.ratingService.remove(+id, userId);
+  remove(@Query('id') id: string) {
+    return this.ratingService.removeRating(+id);
   }
 }

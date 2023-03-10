@@ -53,7 +53,7 @@ export class Blog {
   @IsNotEmpty()
   userId: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'float',nullable: true })
   averageRating: number;
 
   @ManyToOne(() => User, (user) => user.blogs)
