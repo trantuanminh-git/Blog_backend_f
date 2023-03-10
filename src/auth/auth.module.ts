@@ -8,6 +8,7 @@ import { RtStrategy } from './strategies/rt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GithubStrategy } from './strategies/github.strategy';
+import { RoleService } from 'src/role/role.service';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { GithubStrategy } from './strategies/github.strategy';
       secret: 'secret-key',
       signOptions: { expiresIn: '60s' },
     }),
+    RoleService,
   ],
   controllers: [AuthController],
   providers: [

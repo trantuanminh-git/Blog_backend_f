@@ -41,7 +41,7 @@ export class RatingService {
   }
 
   async countRatingByBlogId(blogId: number): Promise<number> {
-    return await this.ratingRepository.count({ where: {blogId: blogId} })
+    return await this.ratingRepository.count({ where: { blogId: blogId } });
   }
 
   async update(
@@ -89,7 +89,7 @@ export class RatingService {
   }
 
   async removeRating(id: number): Promise<Rating> {
-    const rating = await this.ratingRepository.findOneBy({id: id});
+    const rating = await this.ratingRepository.findOneBy({ id: id });
 
     if (!rating) {
       throw new HttpException(
@@ -100,9 +100,9 @@ export class RatingService {
 
     await this.ratingRepository.delete({ id: id });
 
-    return rating;  
+    return rating;
   }
-  
+
   async searchRatingByStar(
     id: number,
     star: number,
