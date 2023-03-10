@@ -72,10 +72,14 @@ export class UserController {
     // return this.userService.update(+id, updateUserDto);
   }
 
+  @UseGuards(AtGuard)
   @Delete(':id')
-  @UseGuards(PoliciesGuard)
-  @CheckAbilities({ action: Action.Delete, subject: User })
-  remove(@Param('id') id: string): Promise<User[]> {
-    return this.userService.remove(+id);
+  // @UseGuards(PoliciesGuard)
+  // @CheckAbilities({ action: Action.Delete, subject: User })
+  remove(
+    @Param('id') id: string,
+    @GetCurrentUserId() curUserId: number,
+  ): Promise<User> {
+    return this.userService.remove(+id, curUserId);
   }
 }

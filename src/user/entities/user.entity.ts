@@ -6,6 +6,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -23,7 +24,7 @@ export class User {
   @AutoMap()
   email: string;
 
-  @Column('text')
+  @Column({ nullable: true })
   @IsNotEmpty()
   @IsString()
   @AutoMap()
@@ -45,7 +46,7 @@ export class User {
   refreshToken: string;
 
   @AutoMap()
-  @OneToOne(() => Role)
+  @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn()
   role: Role;
 

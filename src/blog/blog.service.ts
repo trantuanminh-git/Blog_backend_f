@@ -239,7 +239,7 @@ export class BlogService {
     }
 
     try {
-      ForbiddenError.from(ability).throwUnlessCan(Action.Update, blog);
+      ForbiddenError.from(ability).throwUnlessCan(Action.Delete, blog);
     } catch (err) {
       if (err instanceof ForbiddenError) {
         throw new ForbiddenException(err.message);

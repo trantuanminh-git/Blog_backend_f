@@ -34,16 +34,16 @@ export class Blog {
   // @UpdateDateColumn() // You don't need to set this column - it will be automatically set
   // updated_at: Date; // Last updated date
 
-  @Column('datetime')
+  @Column({ type: 'datetime', default: new Date() }) // 'datetime'
   created_at: Date;
 
-  @Column('datetime')
+  @Column({ type: 'datetime', default: new Date() })
   updated_at: Date;
 
   @Column({ default: 0 })
   view: number;
 
-  @ManyToOne(() => User, (user) => user.blogs)
+  @ManyToOne(() => User, (user) => user.blogs, { onDelete: 'CASCADE' })
   user: User;
 
   @ManyToMany(() => Tag, (tag) => tag.blogs)
