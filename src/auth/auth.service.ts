@@ -39,8 +39,11 @@ export class AuthService {
     }
 
     // check exist role
-    let role = await this.roleService.findOneByRole(user?.role.role || '');
-    if (!role) role = await this.roleService.findOneByRole('user'); // DEFAULT ROLE is user
+    // let role = await this.roleService.findOneByRole(user?.role.role || '');
+    // if (!role) role = await this.roleService.findOneByRole('user'); // DEFAULT ROLE is user
+
+    // DEFAULT ROLE is blogger
+    const role = await this.roleService.findOneByRole('blogger');
 
     // create new user
     const newUser = await this.userService.create(dto);

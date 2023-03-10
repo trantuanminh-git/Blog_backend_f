@@ -33,9 +33,13 @@ export class UserController {
     private caslAbilityFactory: AbilityFactory,
   ) {}
 
+  @UseGuards(AtGuard)
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<ReadUserInfoDto> {
-    return this.userService.create(createUserDto);
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @GetCurrentUserId() curUserId: number,
+  ): Promise<ReadUserInfoDto> {
+    return this.userService.create(createUserDto, curUserId);
   }
 
   @Get()
