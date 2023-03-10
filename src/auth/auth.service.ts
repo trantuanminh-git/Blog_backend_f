@@ -79,7 +79,7 @@ export class AuthService {
 
   async logout(userId: number) {
     const user = await this.userRepository.find({
-      where: [{ id: userId }, { refreshToken: Not(IsNull()) }],
+      where: { id: userId, refreshToken: Not(IsNull()) },
     });
     // Object.assign(user[0], { refreshToken: null });
     for (let i = 0; i < user.length; i++) {
