@@ -31,7 +31,14 @@ export class UserService {
     @InjectMapper() private classMapper: Mapper,
     private abilityFactory: AbilityFactory,
   ) {}
-  async create(createUserDto: CreateUserDto): Promise<ReadUserInfoDto> {
+  async create(
+    createUserDto: CreateUserDto,
+    currentUserId: number,
+  ): Promise<ReadUserInfoDto> {
+    const currentUser = await this.findOneUserDetail(currentUserId);
+    const ability = this.abilityFactory.defineAbility(currentUser);
+
+    // hash password
     const hash = await this.hashData(createUserDto.password);
 
     // check unique email
@@ -67,6 +74,15 @@ export class UserService {
 
     newUser.password = hash;
     console.log(newUser);
+
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(Action.Create, newUser);
+    } catch (err) {
+      if (err instanceof ForbiddenError) {
+        throw new ForbiddenException(err.message);
+      }
+    }
+
     return this.classMapper.mapAsync(
       await this.userRepository.save(newUser),
       User,

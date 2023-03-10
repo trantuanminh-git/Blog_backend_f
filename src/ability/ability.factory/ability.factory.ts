@@ -43,12 +43,13 @@ export class AbilityFactory {
       can(Action.Manage, 'all'); //with "PureAbility as AbilityClass<AppAbility>", we can bind the first argument with the AppAbility
     } else if (user.role.role == new Role('blogger').role) {
       can(Action.Manage, 'all').because('you are special');
+      cannot(Action.Create, User).because("blogger can't create user");
       cannot(Action.Update, User, { id: { $ne: user.id } }).because(
-        'you just can update your information',
+        'blogger just can update your information',
       );
-      cannot(Action.Delete, User).because("you just can't delete");
+      cannot(Action.Delete, User).because("blogger just can't delete");
       cannot(Action.Manage, Blog, { userId: { $ne: user.id } }).because(
-        'you just can CRUD your blog!',
+        'blogger just can CRUD their own blog!',
       );
     }
 
