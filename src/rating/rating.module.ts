@@ -10,7 +10,7 @@ import { NotificationGateway } from 'src/notification/notificationGateway';
 @Module({
   imports: [TypeOrmModule.forFeature([Rating]), NotificationModule],
   controllers: [RatingController],
-  providers: [RatingService],
+  providers: [RatingService, NotificationGateway],
   exports: [RatingService],
 })
 export class RatingModule {}
