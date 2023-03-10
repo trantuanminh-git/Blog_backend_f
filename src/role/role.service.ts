@@ -39,6 +39,8 @@ export class RoleService {
 
   async findOneByRole(role: string) {
     return await this.roleRepository.findOne({ where: { role: role } });
+    // if role is undefined -> return 'admin'????? -> WE DONT NEED THIS (BUG OR FEATURE?????)
+    // if role is '' -> not founded Role -> return null -> WE NEED THIS
   }
 
   update(id: number, updateRoleDto: UpdateRoleDto) {

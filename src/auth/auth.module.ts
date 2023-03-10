@@ -5,6 +5,9 @@ import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AtStrategy } from './strategies/at.strategy';
 import { RtStrategy } from './strategies/rt.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { FacebookStrategy } from './strategies/facebook.strategy';
+import { GithubStrategy } from './strategies/github.strategy';
 
 @Module({
   imports: [
@@ -15,6 +18,13 @@ import { RtStrategy } from './strategies/rt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AtStrategy, RtStrategy], // need to import AtStrategy to use guard
+  providers: [
+    AuthService,
+    AtStrategy,
+    RtStrategy,
+    GoogleStrategy,
+    FacebookStrategy,
+    GithubStrategy,
+  ], // need to import AtStrategy to use guard
 })
 export class AuthModule {}

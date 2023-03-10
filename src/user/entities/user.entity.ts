@@ -27,7 +27,7 @@ export class User {
   @AutoMap()
   email: string;
 
-  @Column('text')
+  @Column({ nullable: true })
   @IsNotEmpty()
   @IsString()
   @AutoMap()
@@ -52,7 +52,7 @@ export class User {
   roleId: number;
 
   @AutoMap()
-  @ManyToOne(() => Role, { cascade: true })
+  @ManyToOne(() => Role, (role) => role.users, { cascade: true })
   @JoinColumn()
   role: Role;
 

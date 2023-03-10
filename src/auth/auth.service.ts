@@ -13,6 +13,7 @@ import { IsNull, Not, Repository } from 'typeorm';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
+import { RoleService } from 'src/role/role.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     private userRepository: Repository<User>,
     private jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly roleService: RoleService,
   ) {}
   async signupLocal(dto: CreateUserDto): Promise<Tokens> {
     const hash = await this.hashData(dto.password);
@@ -35,8 +37,14 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    // check exist role
+    let role = await this.roleService.findOneByRole(user?.role.role || '');
+    if (!role) role = await this.roleService.findOneByRole('user'); // DEFAULT ROLE is user
+
     // create new user
     const newUser = await this.userService.create(dto);
+    newUser.role = role;
     newUser.password = hash;
     console.log(newUser);
     await this.userRepository.save(newUser);
@@ -73,7 +81,7 @@ export class AuthService {
 
   async logout(userId: number) {
     const user = await this.userRepository.find({
-      where: [{ id: userId }, { refreshToken: Not(IsNull()) }],
+      where: { id: userId, refreshToken: Not(IsNull()) },
     });
     // Object.assign(user[0], { refreshToken: null });
     for (let i = 0; i < user.length; i++) {
@@ -147,5 +155,55 @@ export class AuthService {
   async hashData(password: string) {
     const saltOrRounds = 10;
     return await bcrypt.hash(password, saltOrRounds);
+  }
+
+  googleLogin(req) {
+    if (!req.user) {
+      return 'No user from google';
+    }
+
+    const result = {
+      message: 'User information from google',
+      user: req.user,
+    };
+
+    return {
+      message: 'User information from google',
+      user: req.user,
+    };
+  }
+
+  // return tokens, contain access token and refresh token
+  async validateUser(loginUser) {
+    console.log('AuthService');
+    const user = await this.userRepository.findOne({
+      where: { email: loginUser.email },
+    });
+
+    if (user) {
+      console.log('user already exists in DB');
+      // console.log(loginUser);
+      const tokens = await this.getTokens(user.id, user.email); // tokens contain access token and refresh token
+      this.addRefreshTokenToDB(user.id, tokens.refresh_token);
+      // create new access token and refresh token
+      console.log(tokens);
+      return tokens;
+    } else {
+      console.log('create new user in DB - by GG / FB / Twitter');
+      // check exist role
+      let role = await this.roleService.findOneByRole(user?.role.role || '');
+      if (!role) {
+        role = await this.roleService.findOneByRole('user');
+      }
+      const newUser = new User(
+        loginUser.email,
+        Math.random().toString(36).substring(3, 12),
+        loginUser.firstName,
+        'Default Bio',
+        role,
+      );
+      this.signupLocal(newUser);
+      // create new user , generate random password
+    }
   }
 }

@@ -53,10 +53,10 @@ export class Blog {
   @IsNotEmpty()
   userId: number;
 
-  @Column({ type: 'float',nullable: true })
+  @Column({ type: 'float', nullable: true })
   averageRating: number;
 
-  @ManyToOne(() => User, (user) => user.blogs)
+  @ManyToOne(() => User, (user) => user.blogs, { onDelete: 'CASCADE' })
   user: User;
 
   @ManyToMany(() => Tag, (tag) => tag.blogs)

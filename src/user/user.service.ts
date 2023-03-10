@@ -142,13 +142,19 @@ export class UserService {
     );
   }
 
-  async remove(id: number): Promise<User[]> {
-    console.log('--> removing ' + id);
-    return;
-
+  async remove(id: number, currentUserId: number): Promise<User> {
+    const currentUser = await this.findOneUserDetail(currentUserId);
+    const ability = this.abilityFactory.defineAbility(currentUser);
     // =============================================================================================
-    // const user = await this.userRepository.find({ where: { id } });
-    // return this.userRepository.remove(user);
+    const userToDelete = await this.userRepository.findOne({ where: { id } });
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(Action.Delete, userToDelete);
+    } catch (err) {
+      if (err instanceof ForbiddenError) {
+        throw new ForbiddenException(err.message);
+      }
+    }
+    return this.userRepository.remove(userToDelete);
   }
 
   async hashData(password: string) {
