@@ -165,6 +165,14 @@ export class BlogService {
       // .addSelect(['user.username', 'user.email'])
       .getMany();
 
+    if (blog.length == 0) {
+      const errors = { Tag: 'Tag not found.' };
+      throw new HttpException(
+        { message: 'Input data validation failed', errors },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const arrId = []; // list id of the blog having the tag we want to select
 
     for (let i = 0; i < blog.length; i++) {
@@ -371,7 +379,9 @@ export class BlogService {
     const blog = await this.blogRepository.findOneBy({ id: blogId });
 
     if (!blog) {
-      throw new HttpException(new Error("This blog doesn't exists"), HttpStatus.BAD_REQUEST,
+      throw new HttpException(
+        new Error("This blog doesn't exists"),
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -382,7 +392,10 @@ export class BlogService {
     const blog = await this.blogRepository.findOneBy({ id: blogId });
 
     if (!blog) {
-      throw new HttpException(new Error("This blog doesn't exists"), HttpStatus.BAD_REQUEST)
+      throw new HttpException(
+        new Error("This blog doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const rating = await this.ratingService.create(
@@ -394,14 +407,13 @@ export class BlogService {
     if (!blog.averageRating) {
       blog.averageRating = rating.star;
     } else {
-
       const sizeRating = await this.ratingService.countRatingByBlogId(blogId);
 
       const avg = blog.averageRating;
 
-      const sum = avg * (sizeRating-1) + Number(rating.star);
+      const sum = avg * (sizeRating - 1) + Number(rating.star);
 
-      blog.averageRating = sum/sizeRating;
+      blog.averageRating = sum / sizeRating;
     }
 
     const saveBlog = await this.blogRepository.save(blog);
@@ -420,7 +432,10 @@ export class BlogService {
   ): Promise<Blog> {
     const blog = await this.blogRepository.findOneBy({ id: blogId });
     if (!blog) {
-      throw new HttpException(new Error("This blog doesn't exists"), HttpStatus.BAD_REQUEST)
+      throw new HttpException(
+        new Error("This blog doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const oldRating = await this.ratingService.update(
@@ -433,7 +448,8 @@ export class BlogService {
 
     const avg = blog.averageRating;
 
-    const sum = avg * sizeRating - oldRating.star + Number(updateRatingDto.star);
+    const sum =
+      avg * sizeRating - oldRating.star + Number(updateRatingDto.star);
 
     blog.averageRating = sum / sizeRating;
     const saveBlog = await this.blogRepository.save(blog);
@@ -444,24 +460,22 @@ export class BlogService {
     });
   }
 
-  async deleteRating(
-    blogId,
-    idRating,
-    userId: number,
-  ): Promise<Blog> {
+  async deleteRating(blogId, idRating, userId: number): Promise<Blog> {
     const blog = await this.blogRepository.findOneBy({ id: blogId });
     if (!blog) {
-      throw new HttpException(new Error("This blog doesn't exists"), HttpStatus.BAD_REQUEST)
+      throw new HttpException(
+        new Error("This blog doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    const rating = await this.ratingService.remove( idRating, userId);
+    const rating = await this.ratingService.remove(idRating, userId);
 
     return await this.blogRepository.findOne({
       where: { id: blogId },
       relations: { ratings: true },
     });
   }
-
 
   async filterRatingByStar(
     blogId,
