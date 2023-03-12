@@ -10,14 +10,11 @@ export class LikeService {
     @InjectRepository(Likes) private likeRepository: Repository<Likes>,
   ) {}
 
-  async create(
-    createLikeDto: CreateLikeDto,
-    userId: number,
-    blogId: number,
-  ): Promise<Likes> {
+  async create(createLikeDto: CreateLikeDto): Promise<Likes> {
     const like = new Likes();
-    like.userId = userId;
-    like.blogId = blogId;
+    like.userId = createLikeDto.userId;
+    like.blogId = createLikeDto.blogId;
+    console.log(like);
     const saveLike = this.likeRepository.save(like);
     return saveLike;
   }

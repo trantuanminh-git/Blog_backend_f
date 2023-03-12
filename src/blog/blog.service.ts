@@ -132,6 +132,8 @@ export class BlogService {
       .leftJoinAndSelect('blog.tags', 'tags')
       .leftJoin('blog.user', 'user')
       .leftJoinAndSelect('blog.ratings', 'rating')
+      .leftJoinAndSelect('blog.comments', 'comment')
+      .leftJoinAndSelect('blog.likes', 'like')
       .addSelect(['user.username', 'user.email'])
       .getOne();
 
@@ -152,6 +154,7 @@ export class BlogService {
       await this.blogRepository.save(blog);
     }
 
+    blog.comments = blog.comments.filter((comment) => comment.parentId != null);
     return blog;
   }
 
@@ -268,10 +271,9 @@ export class BlogService {
     try {
       const blog = await this.blogRepository.findOneBy({ id: id });
       const like = await this.likeService.findOneByBlogAndUser(userId, id);
-      console.log(like);
       // check if userId has already liked post
       if (!like) {
-        this.likeService.create({}, userId, id);
+        this.likeService.create({ userId, blogId: id });
         blog.likeCount += 1;
       } else {
         this.likeService.remove(userId, id);
@@ -291,7 +293,12 @@ export class BlogService {
   ): Promise<Blog> {
     try {
       const blog = await this.blogRepository.findOneBy({ id: id });
-      this.commentService.create({ content }, userId, id, parentId);
+      await this.commentService.create({
+        content,
+        userId,
+        blogId: id,
+        parentId,
+      });
       blog.cmtCount += 1;
       await this.blogRepository.save(blog);
       return await this.blogRepository.findOne({
@@ -308,11 +315,15 @@ export class BlogService {
     commentId: number,
     content: string,
   ): Promise<Blog> {
-    await this.commentService.update(commentId, { content });
-    return await this.blogRepository.findOne({
-      where: { id: id },
-      relations: { comments: true },
-    });
+    try {
+      await this.commentService.update(commentId, { content });
+      return await this.blogRepository.findOne({
+        where: { id: id },
+        relations: { comments: true },
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 
   async deleteComment(id: number, commentId: number): Promise<Blog> {
@@ -326,6 +337,7 @@ export class BlogService {
       });
     }
     blog.cmtCount -= 1;
+    await this.blogRepository.save(blog);
     return await this.blogRepository.findOne({
       where: { id: id },
       relations: { comments: true },

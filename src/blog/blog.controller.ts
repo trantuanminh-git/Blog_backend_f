@@ -38,8 +38,10 @@ export class BlogController {
 
   @UseGuards(AtGuard) // user need to login to like blog
   @Post(':id/like')
-  like(@GetCurrentUserId() userId: number, @Param() id: number): Promise<Blog> {
-    console.log(userId);
+  like(
+    @GetCurrentUserId() userId: number,
+    @Param('id') id: number,
+  ): Promise<Blog> {
     return this.blogService.likeBlog(id, userId);
   }
 
@@ -47,32 +49,39 @@ export class BlogController {
   @Post(':id/comment')
   comment(
     @GetCurrentUserId() userId: number,
-    @Param() id: number,
-    @Body() content: string,
-    @Body() parentId?: number,
+    @Param('id') id: number,
+    @Body('content') content: string,
+    @Query('parentId') parentId?: number,
   ): Promise<Blog> {
     return this.blogService.commentToBlog(id, userId, content, parentId);
   }
 
   @UseGuards(AtGuard) // user need to login to update comment blog
-  @Put(':id/comment')
+  @Put(':id/comment/:commentId')
   updateComment(
     @GetCurrentUserId() userId: number,
-    @Param() id: number,
-    @Body() commentId: number,
-    @Body() content: string,
+    @Param('id') id: number,
+    @Param('commentId') commentId: number,
+    @Body('content') content: string,
   ): Promise<Blog> {
+    console.log(id, commentId);
     return this.blogService.updateComment(id, commentId, content);
   }
 
   @UseGuards(AtGuard) // user need to login to delete comment blog
-  @Delete(':id/comment')
+  @Delete(':id/comment/:commentId')
   deleteComment(
     @GetCurrentUserId() userId: number,
-    @Param() id: number,
-    @Body() commentId: number,
+    @Param('id') id: number,
+    @Param('commentId') commentId: number,
   ): Promise<Blog> {
     return this.blogService.deleteComment(id, commentId);
+  }
+
+  @UseGuards(AtGuard) // user need to login to comment blog
+  @Post(':id/share')
+  share(@Param('id') id: number): Promise<Blog> {
+    return this.blogService.shareBlog(id);
   }
 
   @Get('get-blog-by-tag/:tagName')
@@ -116,8 +125,8 @@ export class BlogController {
     return this.blogService.deleteRating(
       parseInt(blogId),
       parseInt(idRating),
-      userId
-      );
+      userId,
+    );
   }
 
   @Get(':id/rating')
@@ -193,5 +202,4 @@ export class BlogController {
   async findAll(): Promise<Blog[]> {
     return this.blogService.findAll();
   }
-
 }
