@@ -168,6 +168,14 @@ export class BlogService {
       // .addSelect(['user.username', 'user.email'])
       .getMany();
 
+    if (blog.length == 0) {
+      const errors = { Tag: 'Tag not found.' };
+      throw new HttpException(
+        { message: 'Input data validation failed', errors },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const arrId = []; // list id of the blog having the tag we want to select
 
     for (let i = 0; i < blog.length; i++) {
