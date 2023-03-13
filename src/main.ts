@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
+    .setTitle('Blog')
     .setDescription('The blog API description')
     .setVersion('1.0')
     .addTag('blog')
@@ -16,7 +17,6 @@ async function bootstrap() {
     origin: '*',
     methods: ['GET', 'HEAD', 'PUT', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: '*',
-    credentials: true,
   });
   await app.listen(3000);
 }
