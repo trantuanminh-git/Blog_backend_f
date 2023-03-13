@@ -11,17 +11,12 @@ export class CommentService {
     @InjectRepository(Comment) private commentRepository: Repository<Comment>,
   ) {}
 
-  async create(
-    createCommentDto: CreateCommentDto,
-    userId: number,
-    blogId: number,
-    parentId?: number,
-  ): Promise<Comment> {
+  async create(createCommentDto: CreateCommentDto): Promise<Comment> {
     const comment = new Comment();
     comment.content = createCommentDto.content;
-    comment.userId = userId;
-    comment.blogId = blogId;
-    comment.parentId = parentId;
+    comment.userId = createCommentDto.userId;
+    comment.blogId = createCommentDto.blogId;
+    comment.parentId = createCommentDto.parentId;
     const saveComment = this.commentRepository.save(comment);
     return saveComment;
   }
@@ -34,20 +29,15 @@ export class CommentService {
     return this.commentRepository
       .createQueryBuilder('comment')
       .where('comment.id = :id', { id: id })
-      .leftJoinAndSelect('comment.blog', 'blog')
+      .leftJoin('comment.blog', 'blog')
       .leftJoin('comment.user', 'user')
+      .leftJoinAndSelect('comment.childComments', 'childComment')
       .addSelect(['user.userName', 'blog.title'])
       .getOne();
   }
 
   async findOneByParent(parentId: number) {
-    return this.commentRepository
-      .createQueryBuilder('comment')
-      .where('comment.parentId = :parentid', { parentId: parentId })
-      .leftJoinAndSelect('comment.blog', 'blog')
-      .leftJoin('comment.user', 'user')
-      .addSelect(['user.userName', 'blog.title'])
-      .getOne();
+    return await this.commentRepository.findOneBy({ parentId: parentId });
   }
 
   async update(

@@ -1,3 +1,15 @@
+import { IsNotEmpty } from "class-validator";
+import { NotificationType } from "../entities/notification.entity";
 export class CreateNotificationDto {
-    content: string
+    @IsNotEmpty()
+    type: NotificationType;
+
+    @IsNotEmpty()
+    username: string;
+
+    @IsNotEmpty()
+    userId: number;
+  
+    @IsNotEmpty()
+    blogId: number;
 }

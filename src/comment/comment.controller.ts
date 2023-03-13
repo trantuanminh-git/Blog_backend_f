@@ -16,18 +16,8 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
-  create(
-    @Body() createCommentDto: CreateCommentDto,
-    userId: number,
-    blogId: number,
-    parentId,
-  ) {
-    return this.commentService.create(
-      createCommentDto,
-      userId,
-      blogId,
-      parentId,
-    );
+  create(@Body() createCommentDto: CreateCommentDto) {
+    return this.commentService.create(createCommentDto);
   }
 
   @Get()

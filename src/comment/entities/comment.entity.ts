@@ -45,15 +45,15 @@ export class Comment {
   @Column('int')
   blogId: number;
 
-  @ManyToOne('Comment', (comment: Comment) => comment.comments, {
+  @ManyToOne('Comment', (comment: Comment) => comment.childComments, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'parentId', referencedColumnName: 'id' })
-  comment: Comment;
+  parentComment: Comment;
 
   @AutoMap()
-  @OneToMany(() => Comment, (comment) => comment.comment)
-  comments: Comment[];
+  @OneToMany(() => Comment, (comment) => comment.parentComment)
+  childComments: Comment[];
 
   @ManyToOne('Blog', (blog: Blog) => blog.comments, {
     onDelete: 'CASCADE',

@@ -16,8 +16,8 @@ export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
   @Post()
-  create(@Body() createLikeDto: CreateLikeDto, userId: number, blogId: number) {
-    return this.likeService.create(createLikeDto, userId, blogId);
+  create(@Body() createLikeDto: CreateLikeDto) {
+    return this.likeService.create(createLikeDto);
   }
 
   @Get()

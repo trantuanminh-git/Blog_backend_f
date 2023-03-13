@@ -3,14 +3,12 @@ import { RatingService } from './rating.service';
 import { RatingController } from './rating.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Rating } from './entities/rating.entity';
-import { NotificationModule } from 'src/notification/notification.module';
 import { BlogModule } from 'src/blog/blog.module';
-import { NotificationGateway } from 'src/notification/notificationGateway';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Rating]), NotificationModule],
+  imports: [TypeOrmModule.forFeature([Rating])],
   controllers: [RatingController],
-  providers: [RatingService, NotificationGateway],
+  providers: [RatingService],
   exports: [RatingService],
 })
 export class RatingModule {}
