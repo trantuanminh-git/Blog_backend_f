@@ -20,10 +20,7 @@ import { Notification } from 'src/notification/entities/notification.entity';
 import { NotificationGateway } from 'src/notification/notificationGateway';
 @Controller()
 export class RatingController {
-  constructor(private readonly ratingService: RatingService,
-  private notificationService: NotificationService,
-  // private blogService: BlogService,
-  private notificationGateway: NotificationGateway, ){}
+  constructor(private readonly ratingService: RatingService){}
 
   @UseGuards(AtGuard)
   @Post('rating/blog/:id')
@@ -33,30 +30,7 @@ export class RatingController {
     @Body() createRatingDto: CreateRatingDto,
   ) {
     return this.ratingService.create(createRatingDto, userId, blogId);
-
-    // const ownBlogId = await this.blogService.findUserIdByBlogId(blogId);
-
-    // const message = `Your post received a new rate.`
-
-    // const notification = new Notification(NotificationType.RATING, message, new Date, ownBlogId, blogId);
-
-    // await this.notificationService.create(notification);
-
-    // await this.notificationGateway.sendNotificationToUser(ownBlogId, message);
   }
-
-  // @Get('blog/:id/rating')
-  // async getRatingByStar(
-  //   @Query('star') star: string,
-  //   @Query('page') page = 1,
-  //   @Query('limit') limit = 10,
-  //   @Param('id') blogId: string
-  //   ) {
-
-  //     limit = limit > 100 ? 100 : limit
-
-  //   return this.ratingService.searchRatingByStar( parseInt(blogId), parseInt(star), page, limit);
-  // }
 
   @Get('rating/:id')
   findOne(@Param('id') id: string) {

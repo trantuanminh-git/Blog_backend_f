@@ -4,14 +4,22 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
+import { NotificationGateway } from './notificationGateway';
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
+    private notificationsGateway: NotificationGateway,
   ) {}
-  async create(notification: Notification): Promise<void> {
-    await this.notificationRepository.save(notification);
+
+  async create( ownBlog: number, notiDto: CreateNotificationDto): Promise<Notification> {
+    const notification = new Notification(notiDto.type, notiDto.username, notiDto.userId, notiDto.blogId)
+
+    const savedNotification = await this.notificationRepository.save(notification);
+    this.notificationsGateway.sendNotificationToUser( ownBlog, savedNotification.content);
+
+    return savedNotification;
   }
 
   async findNotificationsByUserId(userId: number): Promise<Notification[]> {
@@ -25,6 +33,13 @@ export class NotificationService {
     });
   }
 
+  async getOne(id: number, userId: number) {
+    const notification = await this.notificationRepository.findOneBy({id: id})
+    await this.markNotificationsAsRead(userId)
+
+    return `/blog/${notification.blogId}` ;
+  }
+
   findAll() {
     return `This action returns all notification`;
   }
@@ -35,7 +50,7 @@ export class NotificationService {
   ): Promise<any> {
     const notification = await this.notificationRepository.update(
       { id },
-      { content: updateNotificationDto.content },
+      { content: updateNotificationDto.type },
     );
 
     return notification;

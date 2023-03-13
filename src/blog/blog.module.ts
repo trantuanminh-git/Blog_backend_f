@@ -1,3 +1,4 @@
+import { NotificationModule } from 'src/notification/notification.module';
 import { CacheModule, Module } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { BlogController } from './blog.controller';
@@ -21,6 +22,7 @@ import { RatingModule } from 'src/rating/rating.module';
     AbilityModule,
     CacheModule.register(),
     RatingModule,
+    NotificationModule
   ],
   controllers: [BlogController],
   providers: [BlogService],

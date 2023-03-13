@@ -1,3 +1,4 @@
+import { NotificationType } from 'src/notification/entities/notification.entity';
 import { ForbiddenError } from '@casl/ability';
 import {
   CACHE_MANAGER,
@@ -28,6 +29,7 @@ import { LikeService } from 'src/like/like.service';
 import { Rating } from 'src/rating/entities/rating.entity';
 import { RatingService } from 'src/rating/rating.service';
 import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class BlogService {
@@ -41,6 +43,7 @@ export class BlogService {
     private readonly userService: UserService,
     private abilityFactory: AbilityFactory,
     private readonly ratingService: RatingService,
+    private notificationService: NotificationService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -420,15 +423,25 @@ export class BlogService {
       blog.averageRating = rating.star;
     } else {
       const sizeRating = await this.ratingService.countRatingByBlogId(blogId);
-
       const avg = blog.averageRating;
-
       const sum = avg * (sizeRating - 1) + Number(rating.star);
-
       blog.averageRating = sum / sizeRating;
     }
 
-    const saveBlog = await this.blogRepository.save(blog);
+    await this.blogRepository.save(blog);
+
+    const userSent = await this.userService.findOneUser(userId);
+
+    const username = userSent.username;
+
+    const notificationDto = {
+      type: NotificationType.RATING,
+      username: username,
+      blogId: blogId,
+      userId: blog.userId
+    }
+
+    const notification = await this.notificationService.create(blog.userId, notificationDto);
 
     return await this.blogRepository.findOne({
       where: { id: blogId },
