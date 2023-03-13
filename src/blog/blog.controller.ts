@@ -10,6 +10,7 @@ import {
   Ip,
   Query,
   Put,
+  Request
 } from '@nestjs/common';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
 import { PoliciesGuard } from 'src/ability/abilities.guard';
@@ -86,7 +87,9 @@ export class BlogController {
     @Param('id') blogId: number,
     @GetCurrentUserId() userId: number,
     @Body() createRatingDto: CreateBlogDto,
+    @Request() req
   ) {
+    console.log(req.user)
     return this.blogService.ratingBlog(createRatingDto, userId, blogId);
   }
 
