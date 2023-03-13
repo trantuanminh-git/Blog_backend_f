@@ -57,7 +57,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   // @Redirect('https://www.fetch.tech/careers', 302)
   // @Redirect('http://localhost:3000/user', 302)
-  @Redirect('http://localhost:3000', 302)
+  // @Redirect('http://localhost:3000', 302)
   googleAuthRedirect(@Req() req) {
     return this.authService.validateUser(req);
     // return this.authService.googleLogin(req);
@@ -71,7 +71,7 @@ export class AuthController {
 
   @Get('/facebook/redirect')
   @UseGuards(AuthGuard('facebook'))
-  @Redirect('http://localhost:3000', 302)
+  // @Redirect('http://localhost:3000', 302)
   facebookAuthRedirect(@Req() req) {
     return this.authService.validateUser(req);
     // return this.authService.googleLogin(req);
@@ -85,7 +85,7 @@ export class AuthController {
 
   @Get('/github/redirect')
   @UseGuards(AuthGuard('github'))
-  @Redirect('http://localhost:3000', 302)
+  // @Redirect('http://localhost:3000', 302)
   githubAuthRedirect(@Req() req) {
     return this.authService.validateUser(req);
     // return this.authService.googleLogin(req);
