@@ -27,6 +27,10 @@ export class UserProfile extends AutomapperProfile {
           mapFrom((d) => d.blogs),
           // ignore(),
         ),
+        forMember(
+          (dest: User) => dest.role,
+          mapFrom((d) => d.role),
+        ),
       );
     };
   }

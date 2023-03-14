@@ -47,6 +47,15 @@ export class UserController {
     return await this.userService.findAll();
   }
 
+  @UseGuards(AtGuard)
+  @Get('/profile')
+  async findInfoTokens(
+    @GetCurrentUserId() curUserId: number,
+  ): Promise<ReadUserInfoDto[]> {
+    console.log(curUserId);
+    return this.userService.findOne(curUserId);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<ReadUserInfoDto[]> {
     return this.userService.findOne(+id);
