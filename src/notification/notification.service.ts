@@ -23,6 +23,8 @@ export class NotificationService {
   }
 
   async findNotificationsByUserId(userId: number): Promise<Notification[]> {
+    await this.markNotificationsAsRead(userId)
+
     return await this.notificationRepository.find({
       where: {
         userId: userId,
@@ -35,8 +37,6 @@ export class NotificationService {
 
   async getOne(id: number, userId: number) {
     const notification = await this.notificationRepository.findOneBy({id: id})
-    await this.markNotificationsAsRead(userId)
-
     return `/blog/${notification.blogId}` ;
   }
 

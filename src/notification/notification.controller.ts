@@ -27,8 +27,8 @@ export class NotificationController {
 
   @Get()
   @UseGuards(AtGuard)
-  findAll() {
-    return this.notificationService.findAll();
+  getAllNotification(@GetCurrentUserId() userId: number) {
+    return this.notificationService.findNotificationsByUserId(userId);
   }
 
   @Get(':id')

@@ -290,6 +290,7 @@ export class BlogService {
         this.likeService.remove(userId, id);
         blog.likeCount -= 1;
       }
+      await this.sendNotification(NotificationType.LIKE, id, userId, blog.userId);
       return await this.blogRepository.save(blog);
     } catch (err) {
       throw err;
@@ -312,6 +313,7 @@ export class BlogService {
       });
       blog.cmtCount += 1;
       await this.blogRepository.save(blog);
+      await this.sendNotification(NotificationType.COMMENT, id, userId, blog.userId);
       return await this.blogRepository.findOne({
         where: { id: id },
         relations: { comments: true },
@@ -430,18 +432,7 @@ export class BlogService {
 
     await this.blogRepository.save(blog);
 
-    const userSent = await this.userService.findOneUser(userId);
-
-    const username = userSent.username;
-
-    const notificationDto = {
-      type: NotificationType.RATING,
-      username: username,
-      blogId: blogId,
-      userId: blog.userId
-    }
-
-    const notification = await this.notificationService.create(blog.userId, notificationDto);
+    await this.sendNotification(NotificationType.RATING, blogId, userId, blog.userId);
 
     return await this.blogRepository.findOne({
       where: { id: blogId },
@@ -514,5 +505,20 @@ export class BlogService {
       page,
       limit,
     );
+  }
+
+  async sendNotification(notificationType: NotificationType, blogId, userIdSent, userIdReceived): Promise<void> {
+    const userSent = await this.userService.findOneUser(userIdSent);
+
+    const username = userSent.username;
+
+    const notificationDto = {
+      type: notificationType,
+      username: username,
+      blogId: blogId,
+      userId: userIdReceived
+    }
+
+    await this.notificationService.create(userIdReceived, notificationDto);
   }
 }
