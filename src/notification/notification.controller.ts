@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -40,18 +41,22 @@ export class NotificationController {
     return this.notificationService.getOne(+id, userId);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(AtGuard)
   update(
     @Param('id') id: string,
     @Body() updateNotificationDto: UpdateNotificationDto,
+    @GetCurrentUserId() userId: number
   ) {
-    return this.notificationService.update(+id, updateNotificationDto);
+    return this.notificationService.update(+id, updateNotificationDto, userId);
   }
 
   @Delete(':id')
   @UseGuards(AtGuard)
-  remove(@Param('id') id: string) {
-    return this.notificationService.remove(+id);
+  remove(
+    @Param('id') id: string,
+    @GetCurrentUserId() userId: number,
+    ) {
+    return this.notificationService.remove(+id, userId);
   }
 }

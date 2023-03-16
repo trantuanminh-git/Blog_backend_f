@@ -286,11 +286,11 @@ export class BlogService {
       if (!like) {
         this.likeService.create({ userId, blogId: id });
         blog.likeCount += 1;
+        await this.sendNotification(NotificationType.LIKE, id, userId, blog.userId);
       } else {
         this.likeService.remove(userId, id);
         blog.likeCount -= 1;
       }
-      await this.sendNotification(NotificationType.LIKE, id, userId, blog.userId);
       return await this.blogRepository.save(blog);
     } catch (err) {
       throw err;
