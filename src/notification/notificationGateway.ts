@@ -8,6 +8,7 @@ export class NotificationGateway {
 
   sendNotificationToUser(userId: number, message: string): void {
     console.log("server send notification")
-    this.server.to(`user_${userId}`).emit('notification', message);
+    this.server.emit(`user_${userId}`, message);
+    //this.server.to(`user_${userId}`).emit('notification', message);
   }
 }

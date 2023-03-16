@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Repository } from 'typeorm';
@@ -23,6 +23,8 @@ export class NotificationService {
   }
 
   async findNotificationsByUserId(userId: number): Promise<Notification[]> {
+    await this.markNotificationsAsRead(userId)
+
     return await this.notificationRepository.find({
       where: {
         userId: userId,
@@ -34,9 +36,14 @@ export class NotificationService {
   }
 
   async getOne(id: number, userId: number) {
-    const notification = await this.notificationRepository.findOneBy({id: id})
-    await this.markNotificationsAsRead(userId)
+    const notification = await this.notificationRepository.findOneBy({id: id, userId: userId})
 
+    if (!notification) {
+      throw new HttpException(
+        new Error("This notification doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     return `/blog/${notification.blogId}` ;
   }
 
@@ -47,7 +54,17 @@ export class NotificationService {
   async update(
     id: number,
     updateNotificationDto: UpdateNotificationDto,
+    userId: number
   ): Promise<any> {
+    const noti = await this.notificationRepository.findOneBy({id: id, userId: userId})
+
+    if (!noti) {
+      throw new HttpException(
+        new Error("This notification doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const notification = await this.notificationRepository.update(
       { id },
       { content: updateNotificationDto.type },
@@ -56,7 +73,16 @@ export class NotificationService {
     return notification;
   }
 
-  async remove(id: number) {
+  async remove(id: number, userId: number) {
+
+    const noti = await this.notificationRepository.findOneBy({id: id, userId: userId})
+
+    if (!noti) {
+      throw new HttpException(
+        new Error("This notification doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     return await this.notificationRepository.delete(id);
   }
 
