@@ -119,6 +119,9 @@ export class BlogService {
       .leftJoinAndSelect('blog.tags', 'tags')
       .leftJoin('blog.user', 'user', 'blog.userId = user.id')
       .addSelect(['user.username', 'user.email'])
+      .leftJoinAndSelect('blog.likes', 'likes')
+      .leftJoin('likes.user', 'userLike')
+      .addSelect(['userLike.username'])
       // .leftJoinAndSelect('blog.user', 'user', 'blog.userId = user.id')
       // .select(['user.username', 'user.email'])
       .getMany();
@@ -133,11 +136,15 @@ export class BlogService {
       .createQueryBuilder('blog')
       .where('blog.id = :id', { id: id })
       .leftJoinAndSelect('blog.tags', 'tags')
-      .leftJoin('blog.user', 'user')
+      .leftJoin('blog.user', 'userBlog')
+      .addSelect(['userBlog.username', 'userBlog.email'])
       .leftJoinAndSelect('blog.ratings', 'rating')
-      .leftJoinAndSelect('blog.comments', 'comment')
-      .leftJoinAndSelect('blog.likes', 'like')
-      .addSelect(['user.username', 'user.email'])
+      .leftJoinAndSelect('blog.comments', 'comments')
+      .leftJoin('comments.user', 'userCmt')
+      .addSelect(['userCmt.username'])
+      .leftJoinAndSelect('blog.likes', 'likes')
+      .leftJoin('likes.user', 'userLike')
+      .addSelect(['userLike.username'])
       .getOne();
 
     if (!blog) {
@@ -438,10 +445,13 @@ export class BlogService {
       type: NotificationType.RATING,
       username: username,
       blogId: blogId,
-      userId: blog.userId
-    }
+      userId: blog.userId,
+    };
 
-    const notification = await this.notificationService.create(blog.userId, notificationDto);
+    const notification = await this.notificationService.create(
+      blog.userId,
+      notificationDto,
+    );
 
     return await this.blogRepository.findOne({
       where: { id: blogId },
