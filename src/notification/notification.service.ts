@@ -23,7 +23,6 @@ export class NotificationService {
   }
 
   async findNotificationsByUserId(userId: number): Promise<Notification[]> {
-    await this.markNotificationsAsRead(userId)
 
     return await this.notificationRepository.find({
       where: {
@@ -44,6 +43,8 @@ export class NotificationService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    notification.isRead = true;
+    await this.notificationRepository.save(notification)
     return `/blog/${notification.blogId}` ;
   }
 

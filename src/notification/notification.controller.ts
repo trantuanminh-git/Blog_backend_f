@@ -23,7 +23,7 @@ export class NotificationController {
   @Post()
   @UseGuards(AtGuard)
   create( userId: number,notification: CreateNotificationDto) {
-    return this.notificationService.create( 0, notification); //admin
+    return this.notificationService.create( 0, notification); //use admin guard
   }
 
   @Get()
@@ -58,5 +58,13 @@ export class NotificationController {
     @GetCurrentUserId() userId: number,
     ) {
     return this.notificationService.remove(+id, userId);
+  }
+
+  @Put('markAll')
+  @UseGuards(AtGuard)
+  markAllNotification(
+    @GetCurrentUserId() userId: number,
+    ) {
+    return this.notificationService.markNotificationsAsRead(userId);
   }
 }
