@@ -76,7 +76,8 @@ export class BlogService {
       user,
     );
 
-    newBlog.tags = await this.addTagToBlog(createBlogDto.tags);
+    const newTags = createBlogDto.tags.split(' ');
+    newBlog.tags = await this.addTagToBlog(newTags);
 
     // newBlog.averageRating = this.calculateAverageRating()
 

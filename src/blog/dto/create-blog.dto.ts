@@ -7,5 +7,5 @@ export class CreateBlogDto {
   @IsNotEmpty()
   content: string;
 
-  tags: string[];
+  tags: string;
 }
