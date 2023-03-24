@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -22,13 +23,13 @@ export class NotificationController {
   @Post()
   @UseGuards(AtGuard)
   create( userId: number,notification: CreateNotificationDto) {
-    return this.notificationService.create( 0, notification); //admin
+    return this.notificationService.create( 0, notification); //use admin guard
   }
 
   @Get()
   @UseGuards(AtGuard)
-  findAll() {
-    return this.notificationService.findAll();
+  getAllNotification(@GetCurrentUserId() userId: number) {
+    return this.notificationService.findNotificationsByUserId(userId);
   }
 
   @Get(':id')
@@ -40,18 +41,30 @@ export class NotificationController {
     return this.notificationService.getOne(+id, userId);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(AtGuard)
   update(
     @Param('id') id: string,
     @Body() updateNotificationDto: UpdateNotificationDto,
+    @GetCurrentUserId() userId: number
   ) {
-    return this.notificationService.update(+id, updateNotificationDto);
+    return this.notificationService.update(+id, updateNotificationDto, userId);
   }
 
   @Delete(':id')
   @UseGuards(AtGuard)
-  remove(@Param('id') id: string) {
-    return this.notificationService.remove(+id);
+  remove(
+    @Param('id') id: string,
+    @GetCurrentUserId() userId: number,
+    ) {
+    return this.notificationService.remove(+id, userId);
+  }
+
+  @Put('markAll')
+  @UseGuards(AtGuard)
+  markAllNotification(
+    @GetCurrentUserId() userId: number,
+    ) {
+    return this.notificationService.markNotificationsAsRead(userId);
   }
 }

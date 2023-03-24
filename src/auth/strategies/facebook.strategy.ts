@@ -11,7 +11,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       clientID: process.env.FB_APP_ID,
       clientSecret: process.env.FB_APP_SECRET,
       callbackURL:
-        'http://ec2-18-141-140-133.ap-southeast-1.compute.amazonaws.com:3000/auth/facebook/redirect',
+        'http://ec2-18-141-178-74.ap-southeast-1.compute.amazonaws.com:3000/auth/facebook/redirect',
       // callbackURL: 'http://localhost:3000/auth/facebook/redirect',
       scope: 'email',
       profileFields: ['emails', 'name'],

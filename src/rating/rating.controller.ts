@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Put
 } from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
@@ -38,7 +39,7 @@ export class RatingController {
   }
 
   @UseGuards(AtGuard)
-  @Patch('rating/:id')
+  @Put('rating/:id')
   update(
     @Param('id') id: string,
     @Body() updateRatingDto: UpdateRatingDto,
