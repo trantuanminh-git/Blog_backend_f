@@ -12,7 +12,7 @@ import {
   Put,
   Request,
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
@@ -207,7 +207,7 @@ export class BlogController {
   }
 
   @Get()
-  async findAll(@GetCurrentUserId() userId?: number): Promise<Blog[]> {
+  async findAll(): Promise<Blog[]> {
     return this.blogService.findAll();
   }
 }

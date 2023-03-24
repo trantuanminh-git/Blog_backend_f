@@ -83,12 +83,13 @@ export class BlogService {
       user,
     );
 
+    console.log(createBlogDto.tags);
     const newTags = createBlogDto.tags.split(' ');
     newBlog.tags = await this.addTagToBlog(newTags);
 
-    const urlImage = (await this.awsService.fileUpload(file));
+    const urlImage = await this.awsService.fileUpload(file);
 
-    newBlog.imageUrl = urlImage+'';
+    newBlog.imageUrl = urlImage + '';
 
     // newBlog.averageRating = this.calculateAverageRating()
 
