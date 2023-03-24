@@ -7,6 +7,6 @@ dotenv.config();
 @Module({
   providers: [AwsService],
   controllers: [AWSController],
-  exports: [AwsService]
+  exports: [AwsService],
 })
 export class AwsModule {}

@@ -6,25 +6,27 @@ dotenv.config();
 
 @Injectable()
 export class AwsService {
-    constructor() {}
+  constructor() {}
 
-    async fileUpload(file: any) {
-        const s3 = new S3();
+  async fileUpload(file: any) {
+    const s3 = new S3();
 
-        const param = {
-            Body: file.buffer,
-            Key: file.originalname,
-            ACL: 'public-read',
-            Bucket: process.env.S3_BUCKET,
-            ContentType: 'image/jpeg'
-        }
+    const param = {
+      Body: file.buffer,
+      Key: file.originalname,
+      ACL: 'public-read',
+      Bucket: process.env.S3_BUCKET,
+      ContentType: 'image/jpeg',
+    };
 
-        return await s3.upload(param).promise()
-                                    .then((data) => {
-                                        return data.Location
-                                    })
-                                    .catch((error) => {
-                                        console.error(error)
-                                    })
-    }
+    return await s3
+      .upload(param)
+      .promise()
+      .then((data) => {
+        return data.Location;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 }

@@ -30,11 +30,7 @@ import { Rating } from 'src/rating/entities/rating.entity';
 import { RatingService } from 'src/rating/rating.service';
 import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { NotificationService } from 'src/notification/notification.service';
-<<<<<<< HEAD
-import { ReadBlogDto } from './dto/read-blog.dto';
-=======
 import { AwsService } from 'src/aws/aws.service';
->>>>>>> NewSon
 
 @Injectable()
 export class BlogService {
@@ -62,7 +58,11 @@ export class BlogService {
     return tags;
   }
 
-  async create(userId: number, createBlogDto: CreateBlogDto, file): Promise<Blog> {
+  async create(
+    userId: number,
+    createBlogDto: CreateBlogDto,
+    file,
+  ): Promise<Blog> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     }); // cant find user with userId=16
@@ -247,7 +247,7 @@ export class BlogService {
 
     const newTitle = updateBlogDto.title;
     const newContent = updateBlogDto.content;
-    const newTags = updateBlogDto.tags;
+    const newTags = updateBlogDto.tags.split(' ');
 
     if (newTitle) toUpdateBlog.title = newTitle;
     if (newContent) toUpdateBlog.content = newContent;

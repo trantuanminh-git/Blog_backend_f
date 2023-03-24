@@ -11,11 +11,8 @@ import {
   Query,
   Put,
   Request,
-<<<<<<< HEAD
-=======
   UseInterceptors,
-  UploadedFile
->>>>>>> NewSon
+  UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
@@ -204,13 +201,9 @@ export class BlogController {
   create(
     @GetCurrentUserId() userId: number,
     @Body() createBlogDto: CreateBlogDto,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<Blog> {
-<<<<<<< HEAD
-    return this.blogService.create(userId, createBlogDto);
-=======
     return this.blogService.create(userId, createBlogDto, file);
->>>>>>> NewSon
   }
 
   @Get()
