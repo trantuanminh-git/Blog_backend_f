@@ -83,9 +83,9 @@ export class BlogService {
       user,
     );
 
-    console.log(createBlogDto.tags);
     const newTags = createBlogDto.tags.split(' ');
     newBlog.tags = await this.addTagToBlog(newTags);
+    console.log(newBlog);
 
     // newBlog.averageRating = this.calculateAverageRating()
 
@@ -557,7 +557,10 @@ export class BlogService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const blog = await this.blogRepository.findOneBy({id: blogId, userId: userId})
+    const blog = await this.blogRepository.findOneBy({
+      id: blogId,
+      userId: userId,
+    });
     if (!blog) {
       throw new HttpException(
         new Error("This blog doesn't exists"),

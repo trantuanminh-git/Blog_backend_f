@@ -13,7 +13,7 @@ export class TagService {
     const tag = await this.tagRepository.findOneBy({
       tag: createTagDto.tag,
     });
-    if (tag) return;
+    if (tag) return tag;
     const newTag = new Tag(createTagDto.tag);
     return await this.tagRepository.save(newTag);
     //create new tag
