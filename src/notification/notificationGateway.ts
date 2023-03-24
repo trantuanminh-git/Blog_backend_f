@@ -1,9 +1,9 @@
+import { WsGuard } from './../common/guards/ws.guard';
 import { UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { BlogService } from 'src/blog/blog.service';
-import { WsGuard } from 'src/common/guards/ws.guard';
 import { User } from 'src/user/entities/user.entity';
 @WebSocketGateway({ cors : true})
 export class NotificationGateway {

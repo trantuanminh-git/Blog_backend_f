@@ -12,7 +12,7 @@ import {
   Put,
   Request,
   UseInterceptors,
-  UploadedFile,
+  UploadedFile
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
