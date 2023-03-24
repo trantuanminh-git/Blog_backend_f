@@ -10,8 +10,11 @@ import {
   Ip,
   Query,
   Put,
-  Request
+  Request,
+  UseInterceptors,
+  UploadedFile
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
 import { PoliciesGuard } from 'src/ability/abilities.guard';
 import { Action } from 'src/ability/ability.factory/ability.factory';
@@ -23,6 +26,7 @@ import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Blog } from './entities/blog.entity';
+import { Express } from 'express';
 
 @Controller('blog')
 export class BlogController {
@@ -192,13 +196,14 @@ export class BlogController {
   }
 
   @UseGuards(AtGuard) // user need to login to create blog
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
   create(
     @GetCurrentUserId() userId: number,
     @Body() createBlogDto: CreateBlogDto,
+    @UploadedFile() file: Express.Multer.File
   ): Promise<Blog> {
-    console.log(userId);
-    return this.blogService.create(userId, createBlogDto);
+    return this.blogService.create(userId, createBlogDto, file);
   }
 
   @Get()

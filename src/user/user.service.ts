@@ -181,4 +181,8 @@ export class UserService {
   async findOneUser(id: number) {
     return await this.userRepository.findOneBy({id: id})
   }
+
+  async findOneUserByEmail(email: string) {
+    return await this.userRepository.findOneBy({email :  email})
+  }
 }
