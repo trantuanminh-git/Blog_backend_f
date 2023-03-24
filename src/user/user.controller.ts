@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   ForbiddenException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -25,6 +27,9 @@ import { ForbiddenError } from '@casl/ability';
 import { AtGuard } from 'src/common/guards/at.guard';
 import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
+
 
 @Controller('user')
 export class UserController {
@@ -45,6 +50,16 @@ export class UserController {
   @Get()
   async findAll(): Promise<ReadUserInfoDto[]> {
     return await this.userService.findAll();
+  }
+
+  @UseGuards(AtGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('/upload/avatar')
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @GetCurrentUserId() UserId: number
+  ): Promise<ReadUserInfoDto> {
+    return this.userService.uploadAvatar(UserId, file);
   }
 
   @UseGuards(AtGuard)

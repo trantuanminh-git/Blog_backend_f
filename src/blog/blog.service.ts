@@ -32,6 +32,7 @@ import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { NotificationService } from 'src/notification/notification.service';
 import { ReadBlogDto } from './dto/read-blog.dto';
 import { AwsService } from 'src/aws/aws.service';
+import { stringify } from 'querystring';
 
 @Injectable()
 export class BlogService {
@@ -80,7 +81,9 @@ export class BlogService {
 
     newBlog.tags = await this.addTagToBlog(createBlogDto.tags);
 
-    // const urlImage = (await this.awsService.fileUpload(file)).Location;
+    const urlImage = (await this.awsService.fileUpload(file));
+
+    newBlog.imageUrl = urlImage+'';
 
     // newBlog.averageRating = this.calculateAverageRating()
 
