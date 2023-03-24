@@ -30,7 +30,11 @@ import { Rating } from 'src/rating/entities/rating.entity';
 import { RatingService } from 'src/rating/rating.service';
 import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { NotificationService } from 'src/notification/notification.service';
+<<<<<<< HEAD
 import { ReadBlogDto } from './dto/read-blog.dto';
+=======
+import { AwsService } from 'src/aws/aws.service';
+>>>>>>> NewSon
 
 @Injectable()
 export class BlogService {
@@ -45,6 +49,7 @@ export class BlogService {
     private abilityFactory: AbilityFactory,
     private readonly ratingService: RatingService,
     private notificationService: NotificationService,
+    private awsService: AwsService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -57,7 +62,7 @@ export class BlogService {
     return tags;
   }
 
-  async create(userId: number, createBlogDto: CreateBlogDto): Promise<Blog> {
+  async create(userId: number, createBlogDto: CreateBlogDto, file): Promise<Blog> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     }); // cant find user with userId=16
@@ -77,6 +82,8 @@ export class BlogService {
     );
 
     newBlog.tags = await this.addTagToBlog(createBlogDto.tags);
+
+    // const urlImage = (await this.awsService.fileUpload(file)).Location;
 
     // newBlog.averageRating = this.calculateAverageRating()
 
