@@ -30,11 +30,8 @@ import { Rating } from 'src/rating/entities/rating.entity';
 import { RatingService } from 'src/rating/rating.service';
 import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { NotificationService } from 'src/notification/notification.service';
-<<<<<<< HEAD
 import { ReadBlogDto } from './dto/read-blog.dto';
-=======
 import { AwsService } from 'src/aws/aws.service';
->>>>>>> NewSon
 
 @Injectable()
 export class BlogService {
