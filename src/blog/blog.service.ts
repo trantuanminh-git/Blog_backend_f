@@ -87,10 +87,6 @@ export class BlogService {
     const newTags = createBlogDto.tags.split(' ');
     newBlog.tags = await this.addTagToBlog(newTags);
 
-    const urlImage = await this.awsService.fileUpload(file);
-
-    newBlog.imageUrl = urlImage + '';
-
     // newBlog.averageRating = this.calculateAverageRating()
 
     await this.blogRepository.save(newBlog);
@@ -552,5 +548,20 @@ export class BlogService {
     };
 
     await this.notificationService.create(userIdReceived, notificationDto);
+  }
+
+  async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
+    const blog = await this.blogRepository.findOneBy({id: blogId, userId: userId})
+    if (!blog) {
+      throw new HttpException(
+        new Error("This blog doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const urlImage = await this.awsService.fileUpload(file);
+    blog.imageUrl = urlImage + '';
+
+    return await this.blogRepository.save(blog);
   }
 }

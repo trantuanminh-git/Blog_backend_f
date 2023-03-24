@@ -42,6 +42,17 @@ export class BlogController {
   //   return this.blogService.findByTitle(title);
   // }
 
+  @UseGuards(AtGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':id/upload/image')
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+    @GetCurrentUserId() UserId: number,
+    @Param('id') blogId: number
+  ): Promise<Blog> {
+    return this.blogService.uploadImage(UserId, file, blogId);
+  }
+
   @UseGuards(AtGuard) // user need to login to like blog
   @Post(':id/like')
   like(
