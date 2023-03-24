@@ -4,11 +4,13 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { Repository } from 'typeorm';
+import { Blog } from 'src/blog/entities/blog.entity';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment) private commentRepository: Repository<Comment>,
+    @InjectRepository(Blog) private blogRepository: Repository<Blog>,
   ) {}
 
   async create(createCommentDto: CreateCommentDto): Promise<Comment> {
@@ -17,12 +19,25 @@ export class CommentService {
     comment.userId = createCommentDto.userId;
     comment.blogId = createCommentDto.blogId;
     comment.parentId = createCommentDto.parentId;
-    const saveComment = this.commentRepository.save(comment);
-    return saveComment;
+    const blog = await this.blogRepository.findOne({
+      where: {
+        id: createCommentDto.blogId,
+      },
+      relations: {
+        comments: true,
+      },
+    });
+    blog.comments.push(comment);
+    blog.cmtCount += 1;
+    console.log(blog);
+    await this.blogRepository.save(blog);
+    return comment;
   }
 
   async findAll() {
-    return await this.commentRepository.find();
+    return await this.commentRepository.find({
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async findOne(id: number) {
@@ -61,19 +76,25 @@ export class CommentService {
   }
 
   async remove(id: number): Promise<Comment> {
-    const rating = await this.commentRepository.findOneBy({
+    const comment = await this.commentRepository.findOneBy({
       id: id,
     });
 
-    if (!rating) {
+    if (!comment) {
       throw new HttpException(
         "This comment doesn't exists.",
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    await this.commentRepository.delete({ id: id });
+    const blog = await this.blogRepository.findOneBy({
+      id: comment.blogId,
+    });
+    blog.cmtCount -= 1;
+    this.blogRepository.save(blog);
 
-    return rating;
+    await this.commentRepository.delete(id);
+
+    return comment;
   }
 }

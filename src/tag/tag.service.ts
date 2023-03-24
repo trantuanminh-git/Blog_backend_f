@@ -8,20 +8,15 @@ import { Tag } from './entities/tag.entity';
 @Injectable()
 export class TagService {
   constructor(@InjectRepository(Tag) private tagRepository: Repository<Tag>) {}
-  async create(createTagDto: CreateTagDto): Promise<Tag> {
-    const { tag } = createTagDto;
-    const tagExist = await this.tagRepository.findOne({ where: { tag: tag } });
 
-    if (tagExist) {
-      const errors = { tag: 'Tag must be unique.' };
-      throw new HttpException(
-        { message: 'Input data validation failed', errors },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    // create new tag
-    const newTag = await this.tagRepository.create(createTagDto);
+  async create(createTagDto: CreateTagDto): Promise<Tag> {
+    const tag = await this.tagRepository.findOneBy({
+      tag: createTagDto.tag,
+    });
+    if (tag) return;
+    const newTag = new Tag(createTagDto.tag);
     return await this.tagRepository.save(newTag);
+    //create new tag
   }
 
   async findAll() {

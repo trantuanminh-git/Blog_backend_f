@@ -33,6 +33,10 @@ export class Blog {
   @IsString()
   content: string;
 
+  @Column()
+  @IsString()
+  imageUrl: string;
+
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
@@ -64,7 +68,7 @@ export class Blog {
   tags: Tag[];
 
   @AutoMap()
-  @OneToMany(() => Likes, (like) => like.user)
+  @OneToMany(() => Likes, (like) => like.blog, { cascade: true })
   likes: Likes[];
 
   @Column({ default: 0 })

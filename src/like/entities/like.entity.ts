@@ -25,7 +25,7 @@ export class Likes {
   @Column('int')
   blogId: number;
 
-  @ManyToOne('User', (blog: Blog) => blog.likes, {
+  @ManyToOne('Blog', (blog: Blog) => blog.likes, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'blogId', referencedColumnName: 'id' })

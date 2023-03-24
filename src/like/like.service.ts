@@ -3,20 +3,33 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { Likes } from './entities/like.entity';
 import { Repository } from 'typeorm';
+import { Blog } from 'src/blog/entities/blog.entity';
+import { zipWith } from 'rxjs';
 
 @Injectable()
 export class LikeService {
   constructor(
     @InjectRepository(Likes) private likeRepository: Repository<Likes>,
+    @InjectRepository(Blog) private blogRepository: Repository<Blog>,
   ) {}
 
   async create(createLikeDto: CreateLikeDto): Promise<Likes> {
     const like = new Likes();
     like.userId = createLikeDto.userId;
     like.blogId = createLikeDto.blogId;
-    console.log(like);
-    const saveLike = this.likeRepository.save(like);
-    return saveLike;
+    const blog = await this.blogRepository.findOne({
+      where: {
+        id: createLikeDto.blogId,
+      },
+      relations: {
+        likes: true,
+      },
+    });
+    blog.likes.push(like);
+    blog.likeCount += 1;
+    console.log(blog);
+    await this.blogRepository.save(blog);
+    return like;
   }
 
   async findAll() {
@@ -51,6 +64,12 @@ export class LikeService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    const blog = await this.blogRepository.findOneBy({
+      id: blogId,
+    });
+    blog.likeCount -= 1;
+    this.blogRepository.save(blog);
 
     await this.likeRepository.delete({
       id: like.id,

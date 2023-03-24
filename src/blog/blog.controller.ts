@@ -10,7 +10,7 @@ import {
   Ip,
   Query,
   Put,
-  Request
+  Request,
 } from '@nestjs/common';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
 import { PoliciesGuard } from 'src/ability/abilities.guard';
@@ -21,6 +21,7 @@ import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { User } from 'src/user/entities/user.entity';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
+import { ReadBlogDto } from './dto/read-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Blog } from './entities/blog.entity';
 
@@ -43,7 +44,7 @@ export class BlogController {
     @GetCurrentUserId() userId: number,
     @Param('id') id: number,
   ): Promise<Blog> {
-    return this.blogService.likeBlog(id, userId);
+    return this.blogService.likeBlog(+id, userId);
   }
 
   @UseGuards(AtGuard) // user need to login to comment blog
@@ -96,9 +97,9 @@ export class BlogController {
     @Param('id') blogId: number,
     @GetCurrentUserId() userId: number,
     @Body() createRatingDto: CreateBlogDto,
-    @Request() req
+    @Request() req,
   ) {
-    console.log(req.user)
+    console.log(req.user);
     return this.blogService.ratingBlog(createRatingDto, userId, blogId);
   }
 
@@ -166,7 +167,6 @@ export class BlogController {
 
   @Get(':id')
   findOne(@Param('id') id: string, @Ip() ip: string) {
-    console.log(ip);
     return this.blogService.findById(parseInt(id), ip);
   }
 
@@ -197,12 +197,11 @@ export class BlogController {
     @GetCurrentUserId() userId: number,
     @Body() createBlogDto: CreateBlogDto,
   ): Promise<Blog> {
-    console.log(userId);
     return this.blogService.create(userId, createBlogDto);
   }
 
   @Get()
-  async findAll(): Promise<Blog[]> {
+  async findAll(@GetCurrentUserId() userId?: number): Promise<Blog[]> {
     return this.blogService.findAll();
   }
 }

@@ -44,16 +44,24 @@ export class User {
   @AutoMap()
   biography: string;
 
+  @Column({
+    default:
+      'https://cambodiaict.net/wp-content/uploads/2019/12/computer-icons-user-profile-google-account-photos-icon-account.jpg',
+    length: 200,
+  })
+  @IsString()
+  @AutoMap()
+  avatarUrl: string;
+
   @Column({ nullable: true })
   @AutoMap()
   refreshToken: string;
 
-  @Column({ nullable: true })
+  @Column()
   roleId: number;
 
   @AutoMap()
   @ManyToOne(() => Role, (role) => role.users, { cascade: true })
-  @JoinColumn()
   role: Role;
 
   @AutoMap()

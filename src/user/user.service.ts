@@ -98,10 +98,12 @@ export class UserService {
   }
 
   async findOne(id: number): Promise<ReadUserInfoDto[]> {
-    const user = await this.userRepository.find({
-      where: { id },
-      relations: ['role', 'blogs'],
-    });
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id: id })
+      .leftJoinAndSelect('user.blogs', 'blogs')
+      .leftJoinAndSelect('blogs.tags', 'tags')
+      .getMany();
     return this.classMapper.mapArrayAsync(user, User, ReadUserInfoDto);
     // return this.usersRepository.findOneBy({id})
   }
@@ -179,6 +181,6 @@ export class UserService {
   }
 
   async findOneUser(id: number) {
-    return await this.userRepository.findOneBy({id: id})
+    return await this.userRepository.findOneBy({ id: id });
   }
 }

@@ -43,13 +43,12 @@ export class AuthService {
     // if (!role) role = await this.roleService.findOneByRole('user'); // DEFAULT ROLE is user
 
     // DEFAULT ROLE is blogger
-    const role = await this.roleService.findOneByRole('blogger');
+    const role = await this.roleService.findOneByRole(dto.role.role);
 
     // create new user
     const newUser = await this.userRepository.create(dto);
     newUser.role = role;
     newUser.password = hash;
-    console.log(newUser);
     await this.userRepository.save(newUser);
 
     const tokens = await this.getTokens(newUser.id, newUser.email); // tokens contain access token and refresh token

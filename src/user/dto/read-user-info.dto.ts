@@ -20,6 +20,9 @@ export class ReadUserInfoDto {
   biography: string;
 
   @AutoMap()
+  avatarUrl: string;
+
+  @AutoMap()
   role: Role;
 
   @AutoMap()

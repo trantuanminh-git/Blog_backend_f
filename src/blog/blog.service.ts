@@ -30,6 +30,7 @@ import { Rating } from 'src/rating/entities/rating.entity';
 import { RatingService } from 'src/rating/rating.service';
 import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { NotificationService } from 'src/notification/notification.service';
+import { ReadBlogDto } from './dto/read-blog.dto';
 
 @Injectable()
 export class BlogService {
@@ -47,27 +48,13 @@ export class BlogService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async addTagToBlog(tagArray: string[], blog: Blog) {
-    const existedTags = [];
-    for (let k = 0; k < blog.tags.length; k++) {
-      existedTags.push(blog.tags[k].tag);
+  async addTagToBlog(tagList: string[]): Promise<Tag[] | undefined> {
+    const tags = [];
+    for (let i = 0; i < tagList.length; i++) {
+      const tag = await this.tagService.create({ tag: tagList[i] });
+      tags.push(tag);
     }
-
-    for (let i = 0; i < tagArray.length; i++) {
-      if (existedTags.includes(tagArray[i])) {
-        console.log(tagArray[i] + ' is existed');
-        continue;
-      }
-      const findedTag = await this.tagService.findOneByTagName(tagArray[i]);
-
-      if (!findedTag) {
-        const newTag = new Tag(tagArray[i]);
-        await this.tagService.create(newTag);
-        blog.tags.push(newTag);
-        continue;
-      }
-      blog.tags.push(findedTag);
-    }
+    return tags;
   }
 
   async create(userId: number, createBlogDto: CreateBlogDto): Promise<Blog> {
@@ -88,8 +75,8 @@ export class BlogService {
       [],
       user,
     );
-    await this.addTagToBlog(createBlogDto.tags, newBlog);
-    console.log(newBlog);
+
+    newBlog.tags = await this.addTagToBlog(createBlogDto.tags);
 
     // newBlog.averageRating = this.calculateAverageRating()
 
@@ -112,7 +99,7 @@ export class BlogService {
     //     tags: true,
     //   },
     // });
-    return await this.blogRepository
+    const blogs = await this.blogRepository
       .createQueryBuilder('blog')
       // .leftJoinAndSelect('blog.user', 'user')
       // .leftJoinAndSelect(User, 'user', 'blog.userId = user.id')
@@ -125,14 +112,38 @@ export class BlogService {
       // .leftJoinAndSelect('blog.user', 'user', 'blog.userId = user.id')
       // .select(['user.username', 'user.email'])
       .getMany();
+
+    return blogs;
   }
 
-  async findById(id: number, ip: string): Promise<Blog> {
+  async findById(id: number, ip?: string): Promise<Blog> {
     // const blog1 = await this.blogRepository.findOne({
     //   where: { id },
     //   relations: ['user', 'tags', 'ratings'],
     // });
-    const blog = await this.blogRepository
+    const blog = await this.blogRepository.findOneBy({ id });
+    console.log(blog);
+
+    if (!blog) {
+      const errors = { blog: 'Blog not found.' };
+      throw new HttpException(
+        { message: 'Input data validation failed', errors },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // COUNT VIEW BASE ON IP (2s)
+    if (ip) {
+      const idOfIP = ip + ':id';
+      const isIpExisted = await this.cacheManager.get(idOfIP);
+      if (!isIpExisted) {
+        await this.cacheManager.set(idOfIP, ip, 2000);
+        blog.view++;
+        await this.blogRepository.save(blog);
+      }
+    }
+
+    return await this.blogRepository
       .createQueryBuilder('blog')
       .where('blog.id = :id', { id: id })
       .leftJoinAndSelect('blog.tags', 'tags')
@@ -144,28 +155,8 @@ export class BlogService {
       .addSelect(['userCmt.username'])
       .leftJoinAndSelect('blog.likes', 'likes')
       .leftJoin('likes.user', 'userLike')
-      .addSelect(['userLike.username'])
+      .addSelect('userLike.username')
       .getOne();
-
-    if (!blog) {
-      const errors = { blog: 'Blog not found.' };
-      throw new HttpException(
-        { message: 'Input data validation failed', errors },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    // COUNT VIEW BASE ON IP (2s)
-    const idOfIP = ip + ':id';
-    const isIpExisted = await this.cacheManager.get(idOfIP);
-    if (!isIpExisted) {
-      await this.cacheManager.set(idOfIP, ip, 2000);
-      blog.view++;
-      await this.blogRepository.save(blog);
-    }
-
-    blog.comments = blog.comments.filter((comment) => comment.parentId != null);
-    return blog;
   }
 
   async findByTag(tag: string): Promise<Blog[]> {
@@ -252,7 +243,7 @@ export class BlogService {
 
     if (newTitle) toUpdateBlog.title = newTitle;
     if (newContent) toUpdateBlog.content = newContent;
-    await this.addTagToBlog(newTags, toUpdateBlog); // if tag is existed, not add
+    toUpdateBlog.tags = await this.addTagToBlog(newTags); // if tag is existed, not add
 
     return await this.blogRepository.save(toUpdateBlog);
   }
@@ -291,13 +282,19 @@ export class BlogService {
       const like = await this.likeService.findOneByBlogAndUser(userId, id);
       // check if userId has already liked post
       if (!like) {
-        this.likeService.create({ userId, blogId: id });
-        blog.likeCount += 1;
+        const like = await this.likeService.create({ userId, blogId: id });
+        // console.log(like);
+        await this.sendNotification(
+          NotificationType.LIKE,
+          id,
+          userId,
+          blog.userId,
+        );
       } else {
-        this.likeService.remove(userId, id);
-        blog.likeCount -= 1;
+        const like = await this.likeService.remove(userId, id);
+        // console.log(like);
       }
-      return await this.blogRepository.save(blog);
+      return await this.findById(id);
     } catch (err) {
       throw err;
     }
@@ -319,10 +316,13 @@ export class BlogService {
       });
       blog.cmtCount += 1;
       await this.blogRepository.save(blog);
-      return await this.blogRepository.findOne({
-        where: { id: id },
-        relations: { comments: true },
-      });
+      await this.sendNotification(
+        NotificationType.COMMENT,
+        id,
+        userId,
+        blog.userId,
+      );
+      return await this.findById(id);
     } catch (err) {
       throw err;
     }
@@ -335,10 +335,7 @@ export class BlogService {
   ): Promise<Blog> {
     try {
       await this.commentService.update(commentId, { content });
-      return await this.blogRepository.findOne({
-        where: { id: id },
-        relations: { comments: true },
-      });
+      return await this.findById(id);
     } catch (err) {
       throw err;
     }
@@ -356,17 +353,15 @@ export class BlogService {
     }
     blog.cmtCount -= 1;
     await this.blogRepository.save(blog);
-    return await this.blogRepository.findOne({
-      where: { id: id },
-      relations: { comments: true },
-    });
+    return this.findById(id);
   }
 
   async shareBlog(id: number): Promise<Blog> {
     try {
       const blog = await this.blogRepository.findOneBy({ id: id });
       blog.shareCount += 1;
-      return await this.blogRepository.save(blog);
+      await this.blogRepository.save(blog);
+      return this.findById(id);
     } catch (err) {
       throw err;
     }
@@ -524,5 +519,25 @@ export class BlogService {
       page,
       limit,
     );
+  }
+
+  async sendNotification(
+    notificationType: NotificationType,
+    blogId,
+    userIdSent,
+    userIdReceived,
+  ): Promise<void> {
+    const userSent = await this.userService.findOneUser(userIdSent);
+
+    const username = userSent.username;
+
+    const notificationDto = {
+      type: notificationType,
+      username: username,
+      blogId: blogId,
+      userId: userIdReceived,
+    };
+
+    await this.notificationService.create(userIdReceived, notificationDto);
   }
 }
