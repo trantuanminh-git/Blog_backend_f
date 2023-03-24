@@ -551,6 +551,12 @@ export class BlogService {
   }
 
   async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
+    if (!file) {
+      throw new HttpException(
+        new Error("This file doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const blog = await this.blogRepository.findOneBy({id: blogId, userId: userId})
     if (!blog) {
       throw new HttpException(
@@ -558,7 +564,6 @@ export class BlogService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
     const urlImage = await this.awsService.fileUpload(file);
     blog.imageUrl = urlImage + '';
 
