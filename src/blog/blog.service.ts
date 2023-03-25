@@ -60,10 +60,7 @@ export class BlogService {
     return tags;
   }
 
-  async create(
-    userId: number,
-    createBlogDto: CreateBlogDto,
-  ): Promise<Blog> {
+  async create(userId: number, createBlogDto: CreateBlogDto): Promise<Blog> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     }); // cant find user with userId=16
