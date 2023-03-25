@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { S3 } from 'aws-sdk';
+import { Upload } from "@aws-sdk/lib-storage";
+import { S3, S3Client } from "@aws-sdk/client-s3";
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -8,8 +9,14 @@ dotenv.config();
 export class AwsService {
   constructor() {}
 
-  async fileUpload(file: any) {
-    const s3 = new S3();
+  async fileUpload(file) {
+    const config = {
+      region: process.env.S3_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+      }
+    };
 
     const param = {
       Body: file.buffer,
@@ -19,14 +26,19 @@ export class AwsService {
       ContentType: 'image/jpeg',
     };
 
-    return await s3
-      .upload(param)
-      .promise()
-      .then((data) => {
-        return data.Location;
+    try {
+      return await new Upload({
+        client: new S3(config),
+        params: param
       })
-      .catch((error) => {
-        console.error(error);
-      });
+        .done()
+        .then((data) => {
+          console.log(data)
+          const url = `https://${param.Bucket}.s3.amazonaws.com/${param.Key}`
+          return url;
+        })
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

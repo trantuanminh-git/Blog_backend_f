@@ -207,14 +207,12 @@ export class BlogController {
   }
 
   @UseGuards(AtGuard) // user need to login to create blog
-  @UseInterceptors(FileInterceptor('file'))
   @Post()
   create(
     @GetCurrentUserId() userId: number,
     @Body() createBlogDto: CreateBlogDto,
-    @UploadedFile() file: Express.Multer.File,
   ): Promise<Blog> {
-    return this.blogService.create(userId, createBlogDto, file);
+    return this.blogService.create(userId, createBlogDto);
   }
 
   @Get()

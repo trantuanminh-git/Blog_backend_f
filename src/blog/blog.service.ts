@@ -63,7 +63,6 @@ export class BlogService {
   async create(
     userId: number,
     createBlogDto: CreateBlogDto,
-    file,
   ): Promise<Blog> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -568,7 +567,7 @@ export class BlogService {
       );
     }
     const urlImage = await this.awsService.fileUpload(file);
-    blog.imageUrl = urlImage + '';
+    blog.imageUrl = urlImage+'';
 
     return await this.blogRepository.save(blog);
   }
