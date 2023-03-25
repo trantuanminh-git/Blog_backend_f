@@ -190,11 +190,11 @@ export class UserService {
     return await this.userRepository.findOneBy({email :  email})
   }
 
-  async uploadAvatar(userId: number, file): Promise<ReadUserInfoDto> {
-    const user = await this.userRepository.findOneBy({id: userId});
-    // const avatar = await this.awsService.fileUpload(file);
-    // user.avatarUrl = avatar+'';
-    const saveUser = await this.userRepository.save(user)
-    return this.classMapper.map(saveUser, User, ReadUserInfoDto);
-  }
+  // async uploadAvatar(userId: number, file): Promise<ReadUserInfoDto> {
+  //   const user = await this.userRepository.findOneBy({id: userId});
+  //   // const avatar = await this.awsService.fileUpload(file);
+  //   // user.avatarUrl = avatar+'';
+  //   const saveUser = await this.userRepository.save(user)
+  //   return this.classMapper.map(saveUser, User, ReadUserInfoDto);
+  // }
 }

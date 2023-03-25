@@ -52,15 +52,15 @@ export class UserController {
     return await this.userService.findAll();
   }
 
-  @UseGuards(AtGuard)
-  @UseInterceptors(FileInterceptor('file'))
-  @Post('/upload/avatar')
-  async uploadAvatar(
-    @UploadedFile() file: Express.Multer.File,
-    @GetCurrentUserId() UserId: number
-  ): Promise<ReadUserInfoDto> {
-    return this.userService.uploadAvatar(UserId, file);
-  }
+  // @UseGuards(AtGuard)
+  // @UseInterceptors(FileInterceptor('file'))
+  // @Post('/upload/avatar')
+  // async uploadAvatar(
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @GetCurrentUserId() UserId: number
+  // ): Promise<ReadUserInfoDto> {
+  //   return this.userService.uploadAvatar(UserId, file);
+  // }
 
   @UseGuards(AtGuard)
   @Get('/profile')

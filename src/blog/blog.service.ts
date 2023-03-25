@@ -549,26 +549,26 @@ export class BlogService {
     await this.notificationService.create(userIdReceived, notificationDto);
   }
 
-  async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
-    if (!file) {
-      throw new HttpException(
-        new Error("This file doesn't exists"),
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const blog = await this.blogRepository.findOneBy({
-      id: blogId,
-      userId: userId,
-    });
-    if (!blog) {
-      throw new HttpException(
-        new Error("This blog doesn't exists"),
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    // const urlImage = await this.awsService.fileUpload(file);
-    // blog.imageUrl = urlImage+'';
+  // async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
+  //   if (!file) {
+  //     throw new HttpException(
+  //       new Error("This file doesn't exists"),
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+  //   const blog = await this.blogRepository.findOneBy({
+  //     id: blogId,
+  //     userId: userId,
+  //   });
+  //   if (!blog) {
+  //     throw new HttpException(
+  //       new Error("This blog doesn't exists"),
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+  //   // const urlImage = await this.awsService.fileUpload(file);
+  //   // blog.imageUrl = urlImage+'';
 
-    return await this.blogRepository.save(blog);
-  }
+  //   return await this.blogRepository.save(blog);
+  // }
 }
