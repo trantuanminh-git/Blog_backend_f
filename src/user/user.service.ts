@@ -1,4 +1,4 @@
-import { AwsService } from './../aws/aws.service';
+// import { AwsService } from './../aws/aws.service';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
@@ -31,7 +31,7 @@ export class UserService {
     private roleRepository: Repository<Role>,
     @InjectMapper() private classMapper: Mapper,
     private abilityFactory: AbilityFactory,
-    private awsService: AwsService
+    // private awsService: AwsService
   ) {}
   async create(
     createUserDto: CreateUserDto,
@@ -192,8 +192,8 @@ export class UserService {
 
   async uploadAvatar(userId: number, file): Promise<ReadUserInfoDto> {
     const user = await this.userRepository.findOneBy({id: userId});
-    const avatar = await this.awsService.fileUpload(file);
-    user.avatarUrl = avatar+'';
+    // const avatar = await this.awsService.fileUpload(file);
+    // user.avatarUrl = avatar+'';
     const saveUser = await this.userRepository.save(user)
     return this.classMapper.map(saveUser, User, ReadUserInfoDto);
   }
