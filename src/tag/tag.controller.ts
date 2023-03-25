@@ -16,10 +16,10 @@ import { Tag } from './entities/tag.entity';
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
-  // @Post()
-  // async create(@Body() createTagDto: CreateTagDto): Promise<Tag> {
-  //   return this.tagService.create(createTagDto);
-  // }
+  @Post()
+  async create(@Body() createTagDto: CreateTagDto): Promise<Tag> {
+    return this.tagService.create(createTagDto);
+  }
 
   @Get()
   findAll() {
