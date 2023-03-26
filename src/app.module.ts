@@ -16,7 +16,7 @@ import { LikeModule } from './like/like.module';
 import { RatingModule } from './rating/rating.module';
 import { NotificationModule } from './notification/notification.module';
 import { ConfigModule } from '@nestjs/config';
-// import { AwsModule } from './aws/aws.module';
+import { AwsModule } from './aws/aws.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -37,7 +37,7 @@ import { ConfigModule } from '@nestjs/config';
     LikeModule,
     RatingModule,
     NotificationModule,
-    // AwsModule,
+    AwsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

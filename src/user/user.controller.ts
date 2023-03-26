@@ -30,7 +30,6 @@ import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.deco
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 
-
 @Controller('user')
 export class UserController {
   constructor(
@@ -52,15 +51,15 @@ export class UserController {
     return await this.userService.findAll();
   }
 
-  // @UseGuards(AtGuard)
-  // @UseInterceptors(FileInterceptor('file'))
-  // @Post('/upload/avatar')
-  // async uploadAvatar(
-  //   @UploadedFile() file: Express.Multer.File,
-  //   @GetCurrentUserId() UserId: number
-  // ): Promise<ReadUserInfoDto> {
-  //   return this.userService.uploadAvatar(UserId, file);
-  // }
+  @UseGuards(AtGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('/upload/avatar')
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @GetCurrentUserId() UserId: number,
+  ): Promise<ReadUserInfoDto> {
+    return this.userService.uploadAvatar(UserId, file);
+  }
 
   @UseGuards(AtGuard)
   @Get('/profile')

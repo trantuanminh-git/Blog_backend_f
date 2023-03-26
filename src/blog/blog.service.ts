@@ -31,7 +31,7 @@ import { RatingService } from 'src/rating/rating.service';
 import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { NotificationService } from 'src/notification/notification.service';
 import { ReadBlogDto } from './dto/read-blog.dto';
-// import { AwsService } from 'src/aws/aws.service';
+import { AwsService } from 'src/aws/aws.service';
 import { stringify } from 'querystring';
 
 @Injectable()
@@ -47,7 +47,7 @@ export class BlogService {
     private abilityFactory: AbilityFactory,
     private readonly ratingService: RatingService,
     private notificationService: NotificationService,
-    // private awsService: AwsService,
+    private awsService: AwsService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -546,26 +546,26 @@ export class BlogService {
     await this.notificationService.create(userIdReceived, notificationDto);
   }
 
-  // async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
-  //   if (!file) {
-  //     throw new HttpException(
-  //       new Error("This file doesn't exists"),
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  //   const blog = await this.blogRepository.findOneBy({
-  //     id: blogId,
-  //     userId: userId,
-  //   });
-  //   if (!blog) {
-  //     throw new HttpException(
-  //       new Error("This blog doesn't exists"),
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  //   // const urlImage = await this.awsService.fileUpload(file);
-  //   // blog.imageUrl = urlImage+'';
+  async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
+    if (!file) {
+      throw new HttpException(
+        new Error("This file doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const blog = await this.blogRepository.findOneBy({
+      id: blogId,
+      userId: userId,
+    });
+    if (!blog) {
+      throw new HttpException(
+        new Error("This blog doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    // const urlImage = await this.awsService.fileUpload(file);
+    // blog.imageUrl = urlImage+'';
 
-  //   return await this.blogRepository.save(blog);
-  // }
+    return await this.blogRepository.save(blog);
+  }
 }
