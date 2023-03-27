@@ -105,6 +105,7 @@ export class UserService {
       .where('user.id = :id', { id: id })
       .leftJoinAndSelect('user.blogs', 'blogs')
       .leftJoinAndSelect('blogs.tags', 'tags')
+      .leftJoinAndSelect('user.role', 'role')
       .getMany();
     return this.classMapper.mapArrayAsync(user, User, ReadUserInfoDto);
     // return this.usersRepository.findOneBy({id})
