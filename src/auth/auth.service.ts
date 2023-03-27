@@ -43,7 +43,7 @@ export class AuthService {
     // if (!role) role = await this.roleService.findOneByRole('user'); // DEFAULT ROLE is user
 
     // DEFAULT ROLE is blogger
-    const role = await this.roleService.findOneByRole(dto.role.role);
+    const role = await this.roleService.findOneByRole('blogger');
 
     // create new user
     const newUser = await this.userRepository.create(dto);
