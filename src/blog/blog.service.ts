@@ -114,6 +114,8 @@ export class BlogService {
       .leftJoinAndSelect('blog.likes', 'likes')
       .leftJoin('likes.user', 'userLike')
       .addSelect(['userLike.username'])
+      .loadRelationCountAndMap('blog.likeCount', 'blog.likes')
+      .loadRelationCountAndMap('blog.cmtCount', 'blog.comments')
       // .leftJoinAndSelect('blog.user', 'user', 'blog.userId = user.id')
       // .select(['user.username', 'user.email'])
       .getMany();
@@ -121,12 +123,27 @@ export class BlogService {
     return blogs;
   }
 
+  async findAllWithLike(userId: number): Promise<[Blog, boolean][]> {
+    const blogs = await this.findAll();
+    const newBlog = [];
+    for (let blog of blogs) {
+      let like = await this.likeService.findOneByBlogAndUser(userId, blog.id);
+      let Liked = false;
+      if (like) Liked = true;
+      newBlog.push([blog, Liked]);
+    }
+    return newBlog;
+  }
+
   async findById(id: number, ip?: string): Promise<Blog> {
     // const blog1 = await this.blogRepository.findOne({
     //   where: { id },
     //   relations: ['user', 'tags', 'ratings'],
     // });
-    const blog = await this.blogRepository.findOneBy({ id });
+    const blog = await this.blogRepository.findOne({
+      where: { id },
+      relations: ['likes', 'comments'],
+    });
     console.log(blog);
 
     if (!blog) {
@@ -137,6 +154,9 @@ export class BlogService {
       );
     }
 
+    blog.likeCount = blog.likes.length;
+    blog.cmtCount = blog.comments.length;
+
     // COUNT VIEW BASE ON IP (2s)
     if (ip) {
       const idOfIP = ip + ':id';
@@ -144,11 +164,12 @@ export class BlogService {
       if (!isIpExisted) {
         await this.cacheManager.set(idOfIP, ip, 2000);
         blog.view++;
-        await this.blogRepository.save(blog);
       }
     }
 
-    return await this.blogRepository
+    await this.blogRepository.save(blog);
+
+    const blogDetail = await this.blogRepository
       .createQueryBuilder('blog')
       .where('blog.id = :id', { id: id })
       .leftJoinAndSelect('blog.tags', 'tags')
@@ -156,15 +177,31 @@ export class BlogService {
       .addSelect(['userBlog.username', 'userBlog.email'])
       .leftJoinAndSelect('blog.ratings', 'rating')
       .leftJoinAndSelect('blog.comments', 'comments')
+      .loadRelationCountAndMap('blog.cmtCount', 'blog.comments')
       .leftJoin('comments.user', 'userCmt')
       .addSelect(['userCmt.username'])
       .leftJoinAndSelect('blog.likes', 'likes')
+      .loadRelationCountAndMap('blog.likeCount', 'blog.likes')
       .leftJoin('likes.user', 'userLike')
       .addSelect('userLike.username')
       .getOne();
+
+    return blogDetail;
   }
 
-  async findByTag(tag: string): Promise<Blog[]> {
+  async findByIdWithLike(
+    id: number,
+    userId: number,
+    ip?: string,
+  ): Promise<[Blog, boolean]> {
+    const blogDetail = await this.findById(id, ip);
+    let Liked = false;
+    const like = await this.likeService.findOneByBlogAndUser(userId, id);
+    if (like) Liked = true;
+    return [blogDetail, Liked];
+  }
+
+  async findByTag(tag: string): Promise<[Blog[], number]> {
     const blog = await this.blogRepository
       .createQueryBuilder('blog')
       .leftJoinAndSelect('blog.tags', 'tagTable')
@@ -195,7 +232,7 @@ export class BlogService {
       .leftJoin('blog.user', 'user', 'blog.userId = user.id')
       .addSelect(['user.username', 'user.email'])
       .where('blog.id IN ( :...listId )', { listId: arrId })
-      .getMany();
+      .getManyAndCount();
   }
 
   async findByTitle(title: string): Promise<[Blog[], number]> {

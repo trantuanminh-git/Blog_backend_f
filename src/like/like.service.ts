@@ -37,6 +37,7 @@ export class LikeService {
   }
 
   async findOneByBlogAndUser(userId: number, blogId: number) {
+    if (userId == undefined || blogId == undefined) return null;
     return await this.likeRepository.findOneBy({
       userId: userId,
       blogId: blogId,

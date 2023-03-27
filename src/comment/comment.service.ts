@@ -5,6 +5,12 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { Repository } from 'typeorm';
 import { Blog } from 'src/blog/entities/blog.entity';
+import {
+  Pagination,
+  IPaginationOptions,
+  paginate,
+} from 'nestjs-typeorm-paginate';
+import { from, Observable, map } from 'rxjs';
 
 @Injectable()
 export class CommentService {
@@ -38,6 +44,14 @@ export class CommentService {
     return await this.commentRepository.find({
       order: { createdAt: 'DESC' },
     });
+  }
+
+  paginateAll(options: IPaginationOptions): Observable<Pagination<Comment>> {
+    return from(
+      paginate<Comment>(this.commentRepository, options, {
+        order: { createdAt: 'DESC' },
+      }),
+    ).pipe(map((commentEntries: Pagination<Comment>) => commentEntries));
   }
 
   async findOne(id: number) {

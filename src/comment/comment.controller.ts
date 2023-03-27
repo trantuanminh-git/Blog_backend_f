@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -25,9 +26,14 @@ export class CommentController {
     return this.commentService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.commentService.findOne(id);
+  @Get('paginate')
+  indexAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    limit = limit > 100 ? 100 : limit;
+
+    return this.commentService.paginateAll({
+      limit: Number(limit),
+      page: Number(page),
+    });
   }
 
   @Patch(':id')
