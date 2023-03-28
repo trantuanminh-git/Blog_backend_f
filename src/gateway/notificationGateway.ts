@@ -1,4 +1,6 @@
-import { WsGuard } from './../common/guards/ws.guard';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
+import { AtGuard } from 'src/common/guards/at.guard';
+import { WsGuard } from './guard/ws.guard';
 import { UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -10,6 +12,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { BlogService } from 'src/blog/blog.service';
 import { User } from 'src/user/entities/user.entity';
+import { MessageDTO } from './dto/message.dto';
 @WebSocketGateway({ cors: true })
 export class NotificationGateway {
   @WebSocketServer()
@@ -27,13 +30,20 @@ export class NotificationGateway {
 
   @UseGuards(WsGuard)
   @SubscribeMessage('notification')
-  receivedAndSendNotificationToUser(client: Socket, message: string): void {
-    console.log('server received notification');
-    const data = message.split(' ', 2);
+  async receivedAndSendNotificationToUser(client: Socket, message: MessageDTO) {
+    console.log(message)
 
-    const userId = this.blogService.findUserIdByBlogId(parseInt(data[1]));
-    // this.server.on(`client_${client.id}`).emit('notification', message);
-    const noti = `You have one ${data[1]}`;
-    this.server.to(`client_${userId}`).emit('notification', noti);
+    if(message.blogId === undefined || message.userIdSent === undefined) {
+        return;
+    }    
+    
+    const userId = await this.blogService.findUserIdByBlogId(message.blogId);
+    const noti = `You have new notification`;
+    if(message.userIdSent === userId) {
+      console.log("sended")
+      this.server.to(`client_${userId}`).emit('notification', noti);
+    } else {
+      console.log("no send")
+    }
   }
 }

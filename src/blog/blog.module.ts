@@ -28,6 +28,6 @@ import { AwsModule } from 'src/aws/aws.module';
   ],
   controllers: [BlogController],
   providers: [BlogService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, BlogService],
 })
 export class BlogModule {}

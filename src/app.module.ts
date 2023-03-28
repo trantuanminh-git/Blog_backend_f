@@ -17,6 +17,7 @@ import { RatingModule } from './rating/rating.module';
 import { NotificationModule } from './notification/notification.module';
 import { ConfigModule } from '@nestjs/config';
 import { AwsModule } from './aws/aws.module';
+import { GatewayModule } from './gateway/gateway.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,6 +39,7 @@ import { AwsModule } from './aws/aws.module';
     RatingModule,
     NotificationModule,
     AwsModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
