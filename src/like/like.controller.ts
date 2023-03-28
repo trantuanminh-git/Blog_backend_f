@@ -7,14 +7,20 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { CreateLikeDto } from './dto/create-like.dto';
+import { AtGuard } from 'src/common/guards/at.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RoleGuard } from 'src/common/guards/roles.guard';
 
 @Controller('like')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
   @Post()
   create(@Body() createLikeDto: CreateLikeDto) {
     return this.likeService.create(createLikeDto);
@@ -31,6 +37,8 @@ export class LikeController {
     return this.likeService.findOne(id);
   }
 
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
   @Delete()
   remove(@Query('blog') userId: number, blogId: number) {
     return this.likeService.remove(userId, blogId);

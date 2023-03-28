@@ -19,11 +19,14 @@ import { NotificationService } from 'src/notification/notification.service';
 import { NotificationType } from 'src/notification/entities/notification.entity';
 import { Notification } from 'src/notification/entities/notification.entity';
 import { NotificationGateway } from 'src/notification/notificationGateway';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RoleGuard } from 'src/common/guards/roles.guard';
 @Controller()
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
 
-  @UseGuards(AtGuard)
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
   @Post('rating/blog/:id')
   async create(
     @Param('id') blogId: number,
@@ -38,7 +41,8 @@ export class RatingController {
     return this.ratingService.findOne(+id);
   }
 
-  @UseGuards(AtGuard)
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
   @Put('rating/:id')
   update(
     @Param('id') id: string,
@@ -48,7 +52,8 @@ export class RatingController {
     return this.ratingService.update(1, +id, updateRatingDto, userId);
   }
 
-  @UseGuards(AtGuard)
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
   @Delete('rating')
   remove(@Query('id') id: string) {
     return this.ratingService.removeRating(+id);

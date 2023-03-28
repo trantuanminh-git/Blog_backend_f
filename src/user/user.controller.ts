@@ -29,6 +29,8 @@ import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RoleGuard } from 'src/common/guards/roles.guard';
 
 @Controller('user')
 export class UserController {

@@ -124,12 +124,15 @@ export class AuthService {
   }
 
   async getTokens(userId: number, email: string) {
+    const user = await this.userService.findOneUser(userId);
+    const roleName = user.role.role;
     const [at, rt] = await Promise.all([
       // sign the user's id and email to get accessToken and refreshToken
       this.jwtService.signAsync(
         {
           user_ID: userId,
           email,
+          role: roleName,
         },
         {
           secret: 'at-secret',
@@ -140,6 +143,7 @@ export class AuthService {
         {
           user_ID: userId,
           email,
+          role: roleName,
         },
         {
           secret: 'rt-secret',

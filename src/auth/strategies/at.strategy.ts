@@ -23,7 +23,6 @@ export class AtStrategy extends PassportStrategy(Strategy, 'myjwt') {
     // payload will have the field used to sign the token in jwtService.signAsync
     console.log('>>>>>> payload');
     console.log(payload);
-    if (!payload) return null;
     return payload; //req.user = payload
   }
 }

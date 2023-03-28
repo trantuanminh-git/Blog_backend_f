@@ -184,7 +184,10 @@ export class UserService {
   }
 
   async findOneUser(id: number) {
-    return await this.userRepository.findOneBy({ id: id });
+    return await this.userRepository.findOne({
+      where: { id: id },
+      relations: ['role'],
+    });
   }
 
   async findOneUserByEmail(email: string) {
