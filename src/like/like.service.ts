@@ -38,6 +38,7 @@ export class LikeService {
 
   async findOneByBlogAndUser(userId: number, blogId: number) {
     if (userId == undefined || blogId == undefined) return null;
+    console.log(userId, blogId);
     return await this.likeRepository.findOneBy({
       userId: userId,
       blogId: blogId,
@@ -55,7 +56,8 @@ export class LikeService {
   }
 
   async remove(userId: number, blogId: number): Promise<Likes> {
-    const like = await await this.likeRepository.findOneBy({
+    console.log(userId, blogId);
+    const like = await this.likeRepository.findOneBy({
       userId: userId,
       blogId: blogId,
     });

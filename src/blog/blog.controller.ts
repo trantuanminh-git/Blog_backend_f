@@ -33,13 +33,13 @@ import { Express } from 'express';
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
-  @Get('noLogin')
+  @Get()
   findAllNoAuth() {
     return this.blogService.findAll();
   }
 
   @UseGuards(AtGuard)
-  @Get()
+  @Get('home')
   findAll(@GetCurrentUserId() userId: number) {
     return this.blogService.findAllWithLike(userId);
   }
@@ -192,7 +192,7 @@ export class BlogController {
   }
 
   @UseGuards(AtGuard)
-  @Get(':id')
+  @Get('home/:id')
   findOne(
     @Param('id') id: number,
     @GetCurrentUserId() curUserId: number,
@@ -201,7 +201,7 @@ export class BlogController {
     return this.blogService.findByIdWithLike(+id, curUserId, ip);
   }
 
-  @Get('noLogin/:id')
+  @Get(':id')
   findOneNoAuth(@Param('id') id: string, @Ip() ip: string) {
     return this.blogService.findById(parseInt(id), ip);
   }
