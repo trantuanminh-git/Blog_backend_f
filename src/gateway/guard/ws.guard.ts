@@ -6,16 +6,17 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class WsGuard implements CanActivate {
 
-    constructor(private userService: UserService,
+    constructor(
+    private userService: UserService,
     private jwtService: JwtService
     ) {}
 
     canActivate(
         context: any,
     ): boolean | any | Promise<boolean | any> | Observable<boolean | any> {
-        const bearerToken = context.args[0].handshake.headers.authorization.split(' ')[1];
+        const bearerToken = context.args[0].handshake.headers.authorization;
         try {
-            const decoded = this.jwtService.verify(bearerToken, { secret: 'at-secret'});
+            const decoded = this.jwtService.verify(bearerToken, {secret: 'at-secret'});
             return new Promise((resolve, reject) => {
                 return this.userService.findOneUserByEmail(decoded?.email).then(user => {
                     if (user) {
