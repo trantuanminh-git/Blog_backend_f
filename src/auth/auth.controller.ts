@@ -59,7 +59,7 @@ export class AuthController {
   // @Redirect('http://localhost:3000/user', 302)
   // @Redirect('http://localhost:3000', 302)
   googleAuthRedirect(@Req() req) {
-    return this.authService.validateUser(req);
+    return this.authService.validateUser(req.user);
     // return this.authService.googleLogin(req);
   }
 
@@ -73,7 +73,7 @@ export class AuthController {
   @UseGuards(AuthGuard('facebook'))
   // @Redirect('http://localhost:3000', 302)
   facebookAuthRedirect(@Req() req) {
-    return this.authService.validateUser(req);
+    return this.authService.validateUser(req.user);
     // return this.authService.googleLogin(req);
   }
 
@@ -87,7 +87,7 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   // @Redirect('http://localhost:3000', 302)
   githubAuthRedirect(@Req() req) {
-    return this.authService.validateUser(req);
+    return this.authService.validateUser(req.user);
     // return this.authService.googleLogin(req);
   }
 }
