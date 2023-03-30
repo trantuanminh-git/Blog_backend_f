@@ -47,12 +47,10 @@ export class RatingService {
   async update(
     id: number,
     blogId: number,
-    updateRatingDto: UpdateRatingDto,
-    userId: number,
+    updateRatingDto: UpdateRatingDto
   ): Promise<Rating> {
     const oldRating = await this.ratingRepository.findOneBy({
       id: id,
-      userId: userId,
       blogId: blogId,
     });
 
