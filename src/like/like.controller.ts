@@ -27,9 +27,9 @@ export class LikeController {
   }
 
   @Get()
-  findAll(@Query('blog') userId: number, blogId: number) {
-    if (!blogId && !userId) return this.likeService.findAll();
-    return this.likeService.findOneByBlogAndUser(userId, blogId);
+  async findAll(@Query('blog') userId: number, blogId: number) {
+    if (!blogId && !userId) return await this.likeService.findAll();
+    return await this.likeService.findOneByBlogAndUser(userId, blogId);
   }
 
   @Get(':id')
@@ -41,6 +41,6 @@ export class LikeController {
   @UseGuards(AtGuard, RoleGuard)
   @Delete()
   remove(@Query('blog') userId: number, blogId: number) {
-    return this.likeService.remove(userId, blogId);
+    return this.likeService.remove(+userId, +blogId);
   }
 }

@@ -11,6 +11,7 @@ import { $ne, ne } from '@ucast/mongo2js';
 import { Blog } from 'src/blog/entities/blog.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { User } from 'src/user/entities/user.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 // the main file where we define the user's rules and permissions
 
@@ -25,7 +26,9 @@ export enum Action {
 }
 
 // export type Subjects = InferSubjects<typeof User> | 'all'; // 'all' is wildcard for any subject
-export type Subjects = InferSubjects<typeof Blog | typeof User> | 'all'; // 'all' is wildcard for any subject
+export type Subjects =
+  | InferSubjects<typeof Blog | typeof User | typeof Comment>
+  | 'all'; // 'all' is wildcard for any subject
 
 // join the Action and Subject together to define the overall type of our casl ability
 export type AppAbility = PureAbility<[Action, Subjects]>;
@@ -50,6 +53,9 @@ export class AbilityFactory {
       cannot(Action.Delete, User).because("blogger just can't delete");
       cannot(Action.Manage, Blog, { userId: { $ne: user.id } }).because(
         'blogger just can CRUD their own blog!',
+      );
+      cannot(Action.Manage, Comment, { userId: { $ne: user.id } }).because(
+        'blogger just can CRUD their own comment!',
       );
     }
 

@@ -12,6 +12,7 @@ import {
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AtGuard } from 'src/common/guards/at.guard';
 import { RoleGuard } from 'src/common/guards/roles.guard';
+// import { UserIsAuthorGuard } from 'src/common/guards/user-is-author.guard';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -40,6 +41,11 @@ export class CommentController {
       limit: Number(limit),
       page: Number(page),
     });
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: number) {
+    return this.commentService.findOne(id);
   }
 
   @Roles('admin')

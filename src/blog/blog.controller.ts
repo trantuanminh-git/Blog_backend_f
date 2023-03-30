@@ -33,15 +33,9 @@ import { Express } from 'express';
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
-  @Get('noLogin')
-  findAllNoAuth() {
+  @Get('home')
+  findAll() {
     return this.blogService.findAll();
-  }
-
-  @UseGuards(AtGuard)
-  @Get()
-  findAll(@GetCurrentUserId() userId: number) {
-    return this.blogService.findAllWithLike(userId);
   }
 
   @Get('get-blog-by-title/:title')
@@ -191,18 +185,8 @@ export class BlogController {
     return averageRating;
   }
 
-  @UseGuards(AtGuard)
   @Get(':id')
-  findOne(
-    @Param('id') id: number,
-    @GetCurrentUserId() curUserId: number,
-    @Ip() ip: string,
-  ) {
-    return this.blogService.findByIdWithLike(+id, curUserId, ip);
-  }
-
-  @Get('noLogin/:id')
-  findOneNoAuth(@Param('id') id: string, @Ip() ip: string) {
+  findOne(@Param('id') id: string, @Ip() ip: string) {
     return this.blogService.findById(parseInt(id), ip);
   }
 
