@@ -13,12 +13,16 @@ import { Server, Socket } from 'socket.io';
 import { BlogService } from 'src/blog/blog.service';
 import { User } from 'src/user/entities/user.entity';
 import { MessageDTO } from './dto/message.dto';
+import { NotificationService } from 'src/notification/notification.service';
 @WebSocketGateway({ cors: true })
 export class NotificationGateway {
   @WebSocketServer()
   server: Server;
 
-  constructor(private blogService: BlogService) {}
+  constructor(
+    private blogService: BlogService,
+    private notificationService: NotificationService
+    ) {}
 
   handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
@@ -38,10 +42,10 @@ export class NotificationGateway {
     }    
     
     const userId = await this.blogService.findUserIdByBlogId(message.blogId);
-    const noti = `You have new notification`;
-    if(message.userIdSent === userId) {
+    const noti = await this.notificationService.findCurrentNoti;
+    if(message.userIdSent !== userId) {
       console.log("sended")
-      this.server.to(`client_${userId}`).emit('notification', noti);
+      this.server.emit(`client_${userId}`, noti);
     } else {
       console.log("no send")
     }

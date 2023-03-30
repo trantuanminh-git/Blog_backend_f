@@ -23,29 +23,31 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Post()
-  @Roles('admin')
-  @UseGuards(AtGuard, RoleGuard)
+  @UseGuards(AtGuard)
   create(userId: number, notification: CreateNotificationDto) {
     return this.notificationService.create(0, notification); //use admin guard
   }
 
   @Get()
-  @Roles('admin')
-  @UseGuards(AtGuard, RoleGuard)
+  @UseGuards(AtGuard)
   getAllNotification(@GetCurrentUserId() userId: number) {
     return this.notificationService.findNotificationsByUserId(userId);
   }
 
   @Get(':id')
-  @Roles('admin')
-  @UseGuards(AtGuard, RoleGuard)
+  @UseGuards(AtGuard)
   getOne(@Param('id') id: string, @GetCurrentUserId() userId: number) {
     return this.notificationService.getOne(+id, userId);
   }
 
+  @Put('markAll')
+  @UseGuards(AtGuard)
+  markAllNotification(@GetCurrentUserId() userId: number) {
+    return this.notificationService.markNotificationsAsRead(userId);
+  }
+
   @Put(':id')
-  @Roles('admin')
-  @UseGuards(AtGuard, RoleGuard)
+  @UseGuards(AtGuard)
   update(
     @Param('id') id: string,
     @Body() updateNotificationDto: UpdateNotificationDto,
@@ -55,15 +57,8 @@ export class NotificationController {
   }
 
   @Delete(':id')
-  @Roles('admin')
-  @UseGuards(AtGuard, RoleGuard)
+  @UseGuards(AtGuard)
   remove(@Param('id') id: string, @GetCurrentUserId() userId: number) {
     return this.notificationService.remove(+id, userId);
-  }
-
-  @Put('markAll')
-  @UseGuards(AtGuard)
-  markAllNotification(@GetCurrentUserId() userId: number) {
-    return this.notificationService.markNotificationsAsRead(userId);
   }
 }

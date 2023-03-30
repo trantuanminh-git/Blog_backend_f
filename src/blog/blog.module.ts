@@ -1,5 +1,5 @@
 import { NotificationModule } from 'src/notification/notification.module';
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule, forwardRef, Module } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { BlogController } from './blog.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,6 +16,7 @@ import { AwsModule } from 'src/aws/aws.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Blog]),
+    forwardRef(() => NotificationModule),
     UserModule,
     TagModule,
     LikeModule,
@@ -23,11 +24,10 @@ import { AwsModule } from 'src/aws/aws.module';
     AbilityModule,
     CacheModule.register(),
     RatingModule,
-    NotificationModule,
     AwsModule,
   ],
   controllers: [BlogController],
-  providers: [BlogService],
+  providers: [BlogService, NotificationModule],
   exports: [TypeOrmModule, BlogService],
 })
 export class BlogModule {}

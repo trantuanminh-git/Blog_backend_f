@@ -3,6 +3,7 @@ import { ForbiddenError } from '@casl/ability';
 import {
   CACHE_MANAGER,
   ForbiddenException,
+  forwardRef,
   HttpException,
   HttpStatus,
   Inject,
@@ -31,8 +32,6 @@ import { RatingService } from 'src/rating/rating.service';
 import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { NotificationService } from 'src/notification/notification.service';
 import { ReadBlogDto } from './dto/read-blog.dto';
-import { AwsService } from 'src/aws/aws.service';
-import { stringify } from 'querystring';
 
 @Injectable()
 export class BlogService {
@@ -46,8 +45,8 @@ export class BlogService {
     private readonly userService: UserService,
     private abilityFactory: AbilityFactory,
     private readonly ratingService: RatingService,
-    private notificationService: NotificationService,
-    private awsService: AwsService,
+    // @Inject(forwardRef(() => NotificationService))
+    private readonly notificationService: NotificationService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -474,20 +473,11 @@ export class BlogService {
 
     await this.blogRepository.save(blog);
 
-    const userSent = await this.userService.findOneUser(userId);
-
-    const username = userSent.username;
-
-    const notificationDto = {
-      type: NotificationType.RATING,
-      username: username,
-      blogId: blogId,
-      userId: blog.userId,
-    };
-
-    const notification = await this.notificationService.create(
+    await this.sendNotification(
+      NotificationType.LIKE,
+      blogId,
+      userId,
       blog.userId,
-      notificationDto,
     );
 
     return await this.blogRepository.findOne({
@@ -577,7 +567,7 @@ export class BlogService {
       type: notificationType,
       username: username,
       blogId: blogId,
-      userId: userIdReceived,
+      userId: userIdSent,
     };
 
     await this.notificationService.create(userIdReceived, notificationDto);
@@ -604,5 +594,13 @@ export class BlogService {
     // blog.imageUrl = urlImage+'';
 
     return await this.blogRepository.save(blog);
+  }
+
+  async findBlogByUserId(userId: number): Promise<Blog[]> {
+    return await this.blogRepository.find({
+      where: {
+        userId: userId,
+      }
+    });
   }
 }

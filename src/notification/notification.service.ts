@@ -1,14 +1,17 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Inject, forwardRef } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
+import { BlogService } from 'src/blog/blog.service';
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectRepository(Notification)
-    private readonly notificationRepository: Repository<Notification>,
+    private notificationRepository: Repository<Notification>,
+    // @Inject(forwardRef(() => BlogService))
+    private readonly blogService: BlogService
   ) {}
 
   async create( ownBlog: number, notiDto: CreateNotificationDto): Promise<Notification> {
@@ -21,9 +24,13 @@ export class NotificationService {
 
   async findNotificationsByUserId(userId: number): Promise<Notification[]> {
 
+    const blogs = await this.blogService.findBlogByUserId(userId);
+    const blogIds = [];
+    blogs.forEach(val => blogIds.push(val.id));
+
     return await this.notificationRepository.find({
       where: {
-        userId: userId,
+        userId: In(blogIds),
       },
       order: {
         createdAt: 'DESC',
@@ -90,4 +97,8 @@ export class NotificationService {
       { isRead: true },
     );
   }
+
+  async findCurrentNoti( userId: number, blogId: number): Promise<Notification> {
+    return await this.notificationRepository.findOneBy({userId: userId, blogId: blogId})
+  } 
 }
