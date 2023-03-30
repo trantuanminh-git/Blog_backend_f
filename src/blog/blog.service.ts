@@ -123,18 +123,6 @@ export class BlogService {
     return blogs;
   }
 
-  async findAllWithLike(userId: number): Promise<[Blog, boolean][]> {
-    const blogs = await this.findAll();
-    const newBlog = [];
-    for (let blog of blogs) {
-      let like = await this.likeService.findOneByBlogAndUser(userId, blog.id);
-      let Liked = false;
-      if (like) Liked = true;
-      newBlog.push([blog, Liked]);
-    }
-    return newBlog;
-  }
-
   async findById(id: number, ip?: string): Promise<Blog> {
     // const blog1 = await this.blogRepository.findOne({
     //   where: { id },
@@ -187,18 +175,6 @@ export class BlogService {
       .getOne();
 
     return blogDetail;
-  }
-
-  async findByIdWithLike(
-    id: number,
-    userId: number,
-    ip?: string,
-  ): Promise<[Blog, boolean]> {
-    const blogDetail = await this.findById(id, ip);
-    let Liked = false;
-    const like = await this.likeService.findOneByBlogAndUser(userId, id);
-    if (like) Liked = true;
-    return [blogDetail, Liked];
   }
 
   async findByTag(tag: string): Promise<[Blog[], number]> {
