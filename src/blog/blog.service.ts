@@ -304,8 +304,7 @@ export class BlogService {
         await this.sendNotification(
           NotificationType.LIKE,
           id,
-          userId,
-          blog.userId,
+          userId
         );
       } else {
         const like = await this.likeService.remove(userId, id);
@@ -336,8 +335,7 @@ export class BlogService {
       await this.sendNotification(
         NotificationType.COMMENT,
         id,
-        userId,
-        blog.userId,
+        userId
       );
       return await this.findById(id);
     } catch (err) {
@@ -452,9 +450,8 @@ export class BlogService {
     await this.sendNotification(
       NotificationType.LIKE,
       blogId,
-      userId,
-      blog.userId,
-    );
+      userId
+      );
 
     return await this.blogRepository.findOne({
       where: { id: blogId },
@@ -532,8 +529,7 @@ export class BlogService {
   async sendNotification(
     notificationType: NotificationType,
     blogId,
-    userIdSent,
-    userIdReceived,
+    userIdSent
   ): Promise<void> {
     const userSent = await this.userService.findOneUser(userIdSent);
 
@@ -546,7 +542,7 @@ export class BlogService {
       userId: userIdSent,
     };
 
-    await this.notificationService.create(userIdReceived, notificationDto);
+    await this.notificationService.create(notificationDto);
   }
 
   async uploadImage(userId: number, file, blogId: number): Promise<Blog> {

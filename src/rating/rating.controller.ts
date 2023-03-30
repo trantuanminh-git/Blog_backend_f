@@ -43,9 +43,8 @@ export class RatingController {
   update(
     @Param('id') id: string,
     @Body() updateRatingDto: UpdateRatingDto,
-    @GetCurrentUserId() userId: number,
   ) {
-    return this.ratingService.update(1, +id, updateRatingDto, userId);
+    return this.ratingService.update(1, +id, updateRatingDto);
   }
 
   @Roles('admin')

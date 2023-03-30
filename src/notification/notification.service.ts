@@ -21,7 +21,6 @@ export class NotificationService {
   ) {}
 
   async create(
-    ownBlog: number,
     notiDto: CreateNotificationDto,
   ): Promise<Notification> {
     const notification = new Notification(
@@ -32,9 +31,8 @@ export class NotificationService {
     );
 
     const savedNotification = await this.notificationRepository.save(
-      notification,
+      notification
     );
-    // this.notificationsGateway.sendNotificationToUser( ownBlog, savedNotification.content);
     return savedNotification;
   }
 
@@ -45,7 +43,7 @@ export class NotificationService {
 
     return await this.notificationRepository.find({
       where: {
-        userId: In(blogIds),
+        blogId: In([...blogIds]),
       },
       order: {
         createdAt: 'DESC',
@@ -53,10 +51,9 @@ export class NotificationService {
     });
   }
 
-  async getOne(id: number, userId: number) {
+  async getOne(id: number) {
     const notification = await this.notificationRepository.findOneBy({
-      id: id,
-      userId: userId,
+      id: id
     });
 
     if (!notification) {
@@ -70,18 +67,12 @@ export class NotificationService {
     return `/blog/${notification.blogId}`;
   }
 
-  findAll() {
-    return `This action returns all notification`;
-  }
-
   async update(
     id: number,
     updateNotificationDto: UpdateNotificationDto,
-    userId: number,
   ): Promise<any> {
     const noti = await this.notificationRepository.findOneBy({
-      id: id,
-      userId: userId,
+      id: id
     });
 
     if (!noti) {
@@ -99,10 +90,9 @@ export class NotificationService {
     return notification;
   }
 
-  async remove(id: number, userId: number) {
+  async remove(id: number) {
     const noti = await this.notificationRepository.findOneBy({
-      id: id,
-      userId: userId,
+      id: id
     });
 
     if (!noti) {
@@ -115,16 +105,47 @@ export class NotificationService {
   }
 
   async markNotificationsAsRead(userId: number): Promise<void> {
+    const blogs = await this.blogService.findBlogByUserId(userId);
+    const blogIds = [];
+    blogs.forEach((val) => blogIds.push(val.id));
+
     await this.notificationRepository.update(
-      { userId, isRead: false },
-      { isRead: true },
+      {
+        blogId: In([...blogIds]),
+        isRead: false
+      },
+      {
+        isRead: true
+      }
     );
   }
 
-  async findCurrentNoti(userId: number, blogId: number): Promise<Notification> {
-    return await this.notificationRepository.findOneBy({
-      userId: userId,
-      blogId: blogId,
+  async findCurrentNoti(userId: number, blogId: number): Promise<Notification[]> {
+    return await this.notificationRepository.find({
+      where: {
+        userId: userId,
+        blogId: blogId
+      },
+      take: 1,
+      order: {
+        createdAt: 'DESC'
+      }
+    })
+  }
+
+  async findAll(
+    page: number,
+    limit: number,
+  ): Promise<[Notification[], number]> {
+    limit = 10;
+    const skipRating = limit * (page - 1);
+
+    return await this.notificationRepository.findAndCount({
+      take: limit,
+      skip: skipRating,
+      order: {
+        createdAt: 'DESC',
+      }
     });
   }
 }

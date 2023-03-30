@@ -67,7 +67,7 @@ export class Notification {
   })
   blog: Blog;
 
-  constructor(type: NotificationType, userName, userId, blogId) {
+  constructor(type: NotificationType, userName: string, userId: number, blogId: number) {
     this.type = type;
     this.content = `${userName} had ${type} the your blog.`;
     this.userId = userId;

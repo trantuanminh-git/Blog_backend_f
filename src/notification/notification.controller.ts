@@ -8,11 +8,11 @@ import {
   Delete,
   UseGuards,
   Put,
+  Query,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { Notification } from './entities/notification.entity';
 import { AtGuard } from 'src/common/guards/at.guard';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -22,10 +22,25 @@ import { RoleGuard } from 'src/common/guards/roles.guard';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
+  @Get('/showAll')
+  async getRatingByStar(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    limit = limit > 100 ? 100 : limit;
+
+    return this.notificationService.findAll(
+      page,
+      limit
+    );
+  }
+
   @Post()
   @UseGuards(AtGuard)
-  create(userId: number, notification: CreateNotificationDto) {
-    return this.notificationService.create(0, notification); //use admin guard
+  create(@Body()notification: CreateNotificationDto) {
+    return this.notificationService.create(notification); //use admin guard
   }
 
   @Get()
@@ -36,8 +51,8 @@ export class NotificationController {
 
   @Get(':id')
   @UseGuards(AtGuard)
-  getOne(@Param('id') id: string, @GetCurrentUserId() userId: number) {
-    return this.notificationService.getOne(+id, userId);
+  getOne(@Param('id') id: string) {
+    return this.notificationService.getOne(+id);
   }
 
   @Put('markAll')
@@ -51,14 +66,13 @@ export class NotificationController {
   update(
     @Param('id') id: string,
     @Body() updateNotificationDto: UpdateNotificationDto,
-    @GetCurrentUserId() userId: number,
   ) {
-    return this.notificationService.update(+id, updateNotificationDto, userId);
+    return this.notificationService.update(+id, updateNotificationDto);
   }
 
   @Delete(':id')
   @UseGuards(AtGuard)
-  remove(@Param('id') id: string, @GetCurrentUserId() userId: number) {
-    return this.notificationService.remove(+id, userId);
+  remove(@Param('id') id: string) {
+    return this.notificationService.remove(+id);
   }
 }
