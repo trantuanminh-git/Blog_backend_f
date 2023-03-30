@@ -477,7 +477,6 @@ export class BlogService {
       idRating,
       blogId,
       updateRatingDto,
-      userId,
     );
     const sizeRating = await this.ratingService.countRatingByBlogId(blogId);
 
