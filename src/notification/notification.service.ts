@@ -1,5 +1,11 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, HttpException, HttpStatus, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { In, Repository } from 'typeorm';
@@ -11,22 +17,31 @@ export class NotificationService {
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
     // @Inject(forwardRef(() => BlogService))
-    private readonly blogService: BlogService
+    private readonly blogService: BlogService,
   ) {}
 
-  async create( ownBlog: number, notiDto: CreateNotificationDto): Promise<Notification> {
-    const notification = new Notification(notiDto.type, notiDto.username, notiDto.userId, notiDto.blogId)
+  async create(
+    ownBlog: number,
+    notiDto: CreateNotificationDto,
+  ): Promise<Notification> {
+    const notification = new Notification(
+      notiDto.type,
+      notiDto.username,
+      notiDto.userId,
+      notiDto.blogId,
+    );
 
-    const savedNotification = await this.notificationRepository.save(notification);
+    const savedNotification = await this.notificationRepository.save(
+      notification,
+    );
     // this.notificationsGateway.sendNotificationToUser( ownBlog, savedNotification.content);
     return savedNotification;
   }
 
   async findNotificationsByUserId(userId: number): Promise<Notification[]> {
-
     const blogs = await this.blogService.findBlogByUserId(userId);
     const blogIds = [];
-    blogs.forEach(val => blogIds.push(val.id));
+    blogs.forEach((val) => blogIds.push(val.id));
 
     return await this.notificationRepository.find({
       where: {
@@ -39,7 +54,10 @@ export class NotificationService {
   }
 
   async getOne(id: number, userId: number) {
-    const notification = await this.notificationRepository.findOneBy({id: id, userId: userId})
+    const notification = await this.notificationRepository.findOneBy({
+      id: id,
+      userId: userId,
+    });
 
     if (!notification) {
       throw new HttpException(
@@ -48,8 +66,8 @@ export class NotificationService {
       );
     }
     notification.isRead = true;
-    await this.notificationRepository.save(notification)
-    return `/blog/${notification.blogId}` ;
+    await this.notificationRepository.save(notification);
+    return `/blog/${notification.blogId}`;
   }
 
   findAll() {
@@ -59,9 +77,12 @@ export class NotificationService {
   async update(
     id: number,
     updateNotificationDto: UpdateNotificationDto,
-    userId: number
+    userId: number,
   ): Promise<any> {
-    const noti = await this.notificationRepository.findOneBy({id: id, userId: userId})
+    const noti = await this.notificationRepository.findOneBy({
+      id: id,
+      userId: userId,
+    });
 
     if (!noti) {
       throw new HttpException(
@@ -79,8 +100,10 @@ export class NotificationService {
   }
 
   async remove(id: number, userId: number) {
-
-    const noti = await this.notificationRepository.findOneBy({id: id, userId: userId})
+    const noti = await this.notificationRepository.findOneBy({
+      id: id,
+      userId: userId,
+    });
 
     if (!noti) {
       throw new HttpException(
@@ -98,7 +121,10 @@ export class NotificationService {
     );
   }
 
-  async findCurrentNoti( userId: number, blogId: number): Promise<Notification> {
-    return await this.notificationRepository.findOneBy({userId: userId, blogId: blogId})
-  } 
+  async findCurrentNoti(userId: number, blogId: number): Promise<Notification> {
+    return await this.notificationRepository.findOneBy({
+      userId: userId,
+      blogId: blogId,
+    });
+  }
 }

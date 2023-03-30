@@ -45,7 +45,7 @@ export class BlogService {
     private readonly userService: UserService,
     private abilityFactory: AbilityFactory,
     private readonly ratingService: RatingService,
-    // @Inject(forwardRef(() => NotificationService))
+    @Inject(forwardRef(() => NotificationService))
     private readonly notificationService: NotificationService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
@@ -600,7 +600,7 @@ export class BlogService {
     return await this.blogRepository.find({
       where: {
         userId: userId,
-      }
+      },
     });
   }
 }

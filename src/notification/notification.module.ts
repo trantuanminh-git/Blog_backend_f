@@ -8,10 +8,10 @@ import { BlogModule } from 'src/blog/blog.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Notification]),
-    forwardRef(() => BlogModule)
-    ],
+    forwardRef(() => BlogModule),
+  ],
   controllers: [NotificationController],
   providers: [NotificationService],
-  exports: [NotificationService]
+  exports: [NotificationService],
 })
 export class NotificationModule {}

@@ -13,10 +13,11 @@ import { CommentModule } from 'src/comment/comment.module';
 
 import { RatingModule } from 'src/rating/rating.module';
 import { AwsModule } from 'src/aws/aws.module';
+import { NotificationService } from 'src/notification/notification.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Blog]),
-    forwardRef(() => NotificationModule),
+    NotificationModule,
     UserModule,
     TagModule,
     LikeModule,
@@ -27,7 +28,7 @@ import { AwsModule } from 'src/aws/aws.module';
     AwsModule,
   ],
   controllers: [BlogController],
-  providers: [BlogService, NotificationModule],
+  providers: [BlogService],
   exports: [TypeOrmModule, BlogService],
 })
 export class BlogModule {}
