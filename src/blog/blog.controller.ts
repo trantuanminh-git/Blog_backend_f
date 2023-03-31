@@ -87,7 +87,7 @@ export class BlogController {
     @Body('content') content: string,
   ): Promise<Blog> {
     console.log(id, commentId);
-    return this.blogService.updateComment(id, commentId, content);
+    return this.blogService.updateComment(id, userId, commentId, content);
   }
 
   @UseGuards(AtGuard) // user need to login to delete comment blog
@@ -97,7 +97,7 @@ export class BlogController {
     @Param('id') id: number,
     @Param('commentId') commentId: number,
   ): Promise<Blog> {
-    return this.blogService.deleteComment(id, commentId);
+    return this.blogService.deleteComment(id, userId, commentId);
   }
 
   @UseGuards(AtGuard) // user need to login to comment blog

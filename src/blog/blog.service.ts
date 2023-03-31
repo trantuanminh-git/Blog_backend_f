@@ -131,7 +131,6 @@ export class BlogService {
       where: { id },
       relations: ['likes', 'comments'],
     });
-    console.log(blog);
 
     if (!blog) {
       const errors = { blog: 'Blog not found.' };
@@ -337,13 +336,13 @@ export class BlogService {
 
   async updateComment(
     id: number,
+    userId: number,
     commentId: number,
     content: string,
   ): Promise<Blog> {
     const comment = await this.commentService.findOne(commentId);
-    const currentUser = await this.userService.findOneUserDetail(
-      comment.userId,
-    );
+    const currentUser = await this.userService.findOneUserDetail(userId);
+    // console.log(userId);
     const ability = this.abilityFactory.defineAbility(currentUser);
 
     try {
@@ -362,7 +361,23 @@ export class BlogService {
     }
   }
 
-  async deleteComment(id: number, commentId: number): Promise<Blog> {
+  async deleteComment(
+    id: number,
+    userId: number,
+    commentId: number,
+  ): Promise<Blog> {
+    const comment = await this.commentService.findOne(commentId);
+    const currentUser = await this.userService.findOneUserDetail(userId);
+    console.log(userId);
+    const ability = this.abilityFactory.defineAbility(currentUser);
+
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(Action.Delete, comment);
+    } catch (err) {
+      if (err instanceof ForbiddenError) {
+        throw new ForbiddenException(err.message);
+      }
+    }
     const blog = await this.blogRepository.findOneBy({ id: id });
     const subcomment = await this.commentService.findOneByParent(commentId);
     if (!subcomment) {
@@ -467,6 +482,18 @@ export class BlogService {
     userId: number,
     updateRatingDto: UpdateRatingDto,
   ): Promise<Blog> {
+    const rating = await this.commentService.findOne(idRating);
+    const currentUser = await this.userService.findOneUserDetail(userId);
+    // console.log(userId);
+    const ability = this.abilityFactory.defineAbility(currentUser);
+
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(Action.Update, rating);
+    } catch (err) {
+      if (err instanceof ForbiddenError) {
+        throw new ForbiddenException(err.message);
+      }
+    }
     const blog = await this.blogRepository.findOneBy({ id: blogId });
     if (!blog) {
       throw new HttpException(
@@ -497,6 +524,18 @@ export class BlogService {
   }
 
   async deleteRating(blogId, idRating, userId: number): Promise<Blog> {
+    const foundRating = await this.commentService.findOne(idRating);
+    const currentUser = await this.userService.findOneUserDetail(userId);
+    // console.log(userId);
+    const ability = this.abilityFactory.defineAbility(currentUser);
+
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(Action.Delete, foundRating);
+    } catch (err) {
+      if (err instanceof ForbiddenError) {
+        throw new ForbiddenException(err.message);
+      }
+    }
     const blog = await this.blogRepository.findOneBy({ id: blogId });
     if (!blog) {
       throw new HttpException(
