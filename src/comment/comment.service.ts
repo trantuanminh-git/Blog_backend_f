@@ -49,7 +49,13 @@ export class CommentService {
   paginateAll(options: IPaginationOptions): Observable<Pagination<Comment>> {
     return from(
       paginate<Comment>(this.commentRepository, options, {
+        select: {
+          user: {
+            username: true,
+          },
+        },
         order: { createdAt: 'DESC' },
+        relations: { user: true },
       }),
     ).pipe(map((commentEntries: Pagination<Comment>) => commentEntries));
   }

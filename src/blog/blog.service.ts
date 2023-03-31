@@ -486,7 +486,6 @@ export class BlogService {
     const currentUser = await this.userService.findOneUserDetail(userId);
     // console.log(userId);
     const ability = this.abilityFactory.defineAbility(currentUser);
-
     try {
       ForbiddenError.from(ability).throwUnlessCan(Action.Update, rating);
     } catch (err) {
