@@ -136,7 +136,7 @@ export class AuthService {
         },
         {
           secret: 'at-secret',
-          expiresIn: 60 * 15, // accessTokens will expire in 15 minutes
+          expiresIn: 60 * 60 * 24, // accessTokens will expire in 1 day // 15 minutes //
         },
       ),
       this.jwtService.signAsync(
