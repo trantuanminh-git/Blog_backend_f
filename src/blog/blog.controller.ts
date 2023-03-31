@@ -33,7 +33,7 @@ import { Express } from 'express';
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
-  @Get('home')
+  @Get()
   findAll() {
     return this.blogService.findAll();
   }

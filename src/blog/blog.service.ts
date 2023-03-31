@@ -299,15 +299,11 @@ export class BlogService {
       const like = await this.likeService.findOneByBlogAndUser(userId, id);
       // check if userId has already liked post
       if (!like) {
-        const like = await this.likeService.create({ userId, blogId: id });
+        const newLike = await this.likeService.create({ userId, blogId: id });
         // console.log(like);
-        await this.sendNotification(
-          NotificationType.LIKE,
-          id,
-          userId
-        );
+        await this.sendNotification(NotificationType.LIKE, id, userId);
       } else {
-        const like = await this.likeService.remove(userId, id);
+        const newLike = await this.likeService.remove(userId, id);
         // console.log(like);
       }
       return await this.findById(id);
@@ -332,11 +328,7 @@ export class BlogService {
       });
       blog.cmtCount += 1;
       await this.blogRepository.save(blog);
-      await this.sendNotification(
-        NotificationType.COMMENT,
-        id,
-        userId
-      );
+      await this.sendNotification(NotificationType.COMMENT, id, userId);
       return await this.findById(id);
     } catch (err) {
       throw err;
@@ -348,6 +340,20 @@ export class BlogService {
     commentId: number,
     content: string,
   ): Promise<Blog> {
+    const comment = await this.commentService.findOne(commentId);
+    const currentUser = await this.userService.findOneUserDetail(
+      comment.userId,
+    );
+    const ability = this.abilityFactory.defineAbility(currentUser);
+
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(Action.Update, comment);
+    } catch (err) {
+      if (err instanceof ForbiddenError) {
+        throw new ForbiddenException(err.message);
+      }
+    }
+
     try {
       await this.commentService.update(commentId, { content });
       return await this.findById(id);
@@ -447,11 +453,7 @@ export class BlogService {
 
     await this.blogRepository.save(blog);
 
-    await this.sendNotification(
-      NotificationType.LIKE,
-      blogId,
-      userId
-      );
+    await this.sendNotification(NotificationType.LIKE, blogId, userId);
 
     return await this.blogRepository.findOne({
       where: { id: blogId },
@@ -528,7 +530,7 @@ export class BlogService {
   async sendNotification(
     notificationType: NotificationType,
     blogId,
-    userIdSent
+    userIdSent,
   ): Promise<void> {
     const userSent = await this.userService.findOneUser(userIdSent);
 
