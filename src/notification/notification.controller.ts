@@ -37,6 +37,14 @@ export class NotificationController {
     );
   }
 
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
+  @Get('/all')
+  async getAll() {
+
+    return this.notificationService.all();
+  }
+
   @Post()
   @UseGuards(AtGuard)
   create(@Body()notification: CreateNotificationDto) {
