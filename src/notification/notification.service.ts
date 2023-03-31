@@ -124,7 +124,8 @@ export class NotificationService {
     return await this.notificationRepository.find({
       where: {
         userId: userId,
-        blogId: blogId
+        blogId: blogId,
+        isRead: false
       },
       take: 1,
       order: {
