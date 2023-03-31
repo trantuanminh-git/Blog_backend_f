@@ -148,4 +148,8 @@ export class NotificationService {
       }
     });
   }
+
+  async all(): Promise<Notification[]> {
+    return await this.notificationRepository.find()
+  }
 }
