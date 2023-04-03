@@ -1,0 +1,15 @@
+# version: '1'
+
+#   services:
+#     db:
+#         image:  sql
+#         volumes:
+#     web:
+#         image: fetch-blog
+#         ports:
+#           - "3000:3000"
+#         depends_on:
+#           - db
+
+
+
