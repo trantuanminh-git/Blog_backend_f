@@ -8,4 +8,6 @@ export class CreateBlogDto {
   content: string;
 
   tags: string;
+
+  imageUrl: string;
 }

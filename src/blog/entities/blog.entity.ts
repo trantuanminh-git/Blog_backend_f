@@ -94,10 +94,11 @@ export class Blog {
   )
   notifications: Notification[];
 
-  constructor(title: string, content: string, tags: Tag[], user: User) {
+  constructor(title: string, content: string,imageUrl: string, tags: Tag[], user: User) {
     this.title = title;
     this.content = content;
     this.tags = tags;
     this.user = user;
+    this.imageUrl = imageUrl;
   }
 }
