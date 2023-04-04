@@ -44,7 +44,7 @@ export class NotificationGateway {
     const userId = await this.blogService.findUserIdByBlogId(message.blogId);
     const notification = await this.notificationService.findCurrentNoti(message.userIdSent, message.blogId);
     if(message.userIdSent !== userId) {
-      console.log("sended")
+      console.log("sent")
       this.server.emit(`client_${userId}`, notification);
     } else {
       console.log("no send")
