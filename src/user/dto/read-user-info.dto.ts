@@ -25,6 +25,12 @@ export class ReadUserInfoDto {
   @AutoMap()
   role: Role;
 
+  // @AutoMap()
+  socialId: string;
+
+  // @AutoMap()
+  social: string;
+
   @AutoMap()
   blogs: Blog[];
 }

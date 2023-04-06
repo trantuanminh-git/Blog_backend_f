@@ -119,6 +119,16 @@ export class UserService {
     return currentUser;
   }
 
+  async findOneUserBySocial(socialId, social): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.socialId = :socialId', { socialId: socialId })
+      .andWhere('user.social = :social', { social: social })
+      .getOne();
+    if (!user) return null;
+    return this.findOneUserDetail(user.id)[0];
+  }
+
   async update(
     id: number,
     updateUserDto: UpdateUserDto,

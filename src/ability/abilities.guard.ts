@@ -44,6 +44,8 @@ export class PoliciesGuard implements CanActivate {
       ratings: [],
       notifications: [],
       avatarUrl: '',
+      socialId: '',
+      social: '',
     };
     const ability = this.caslAbilityFactory.defineAbility(user1);
     // console.log(ability);
