@@ -78,7 +78,7 @@ export class BlogService {
       user,
     );
 
-    const newTags = createBlogDto.tags.split(' ');
+    const newTags = createBlogDto.tags.split(',');
     newBlog.tags = await this.addTagToBlog(newTags);
     console.log(newBlog);
 
@@ -255,7 +255,7 @@ export class BlogService {
 
     const newTitle = updateBlogDto.title;
     const newContent = updateBlogDto.content;
-    const newTags = updateBlogDto.tags.split(' ');
+    const newTags = updateBlogDto.tags.split(',');
 
     if (newTitle) toUpdateBlog.title = newTitle;
     if (newContent) toUpdateBlog.content = newContent;
