@@ -85,13 +85,13 @@ export class BlogService {
     newBlog.tags = await this.addTagToBlog(newTags);
     const savedBlog = await this.blogRepository.save(newBlog);
 
-    const notificationDto = {
-      type: NotificationType.CREATE,
-      username: user.username,
-      blogId: savedBlog.id,
-      userId: user.id,
-    };    
-    await this.notificationService.create(notificationDto);
+    // const notificationDto = {
+    //   type: NotificationType.CREATE,
+    //   username: user.username,
+    //   blogId: savedBlog.id,
+    //   userId: user.id,
+    // };    
+    // await this.notificationService.create(notificationDto);
 
     // return newBlog without password and refresh token
     return this.blogRepository
