@@ -83,11 +83,15 @@ export class BlogService {
 
     const newTags = createBlogDto.tags.split(' ');
     newBlog.tags = await this.addTagToBlog(newTags);
-    console.log(newBlog);
+    const savedBlog = await this.blogRepository.save(newBlog);
 
-    // newBlog.averageRating = this.calculateAverageRating()
-
-    await this.blogRepository.save(newBlog);
+    const notificationDto = {
+      type: NotificationType.CREATE,
+      username: user.username,
+      blogId: savedBlog.id,
+      userId: user.id,
+    };    
+    await this.notificationService.create(notificationDto);
 
     // return newBlog without password and refresh token
     return this.blogRepository
@@ -588,29 +592,6 @@ export class BlogService {
 
     await this.notificationService.create(notificationDto);
   }
-
-  // async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
-  //   if (!file) {
-  //     throw new HttpException(
-  //       new Error("This file doesn't exists"),
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  //   const blog = await this.blogRepository.findOneBy({
-  //     id: blogId,
-  //     userId: userId,
-  //   });
-  //   if (!blog) {
-  //     throw new HttpException(
-  //       new Error("This blog doesn't exists"),
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  //   const urlImage = await this.awsService.fileUpload(file);
-  //   blog.imageUrl = urlImage+'';
-
-  //   return await this.blogRepository.save(blog);
-  // }
 
   async findBlogByUserId(userId: number): Promise<Blog[]> {
     return await this.blogRepository.find({
