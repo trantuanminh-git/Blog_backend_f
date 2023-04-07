@@ -14,6 +14,9 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { RoleService } from 'src/role/role.service';
+import { SocialLoginDto } from './dto/socialLogin.dto';
+import jwt_decode from 'jwt-decode';
+import { GoogleLoginDto } from './dto/googleLogin.dto';
 
 @Injectable()
 export class AuthService {
@@ -211,5 +214,61 @@ export class AuthService {
       this.signupLocal(newUser);
       // create new user , generate random password
     }
+  }
+
+  async socialLogin(tokenSocial: string, social: string): Promise<Tokens> {
+    // infomation of user login social
+    const data = (await this.jwtService.decode(tokenSocial)) as GoogleLoginDto;
+    // console.log(data);
+
+    // check if user login with social is already existed in database, check by socialId and social
+    const userLoginInfo = await this.userService.findOneUserBySocial(
+      data.sub,
+      social,
+    );
+    console.log(userLoginInfo);
+    if (!userLoginInfo) {
+      // if user not already login with social, but user already use the email to sign up local before
+      const userCheckEmail = await this.userRepository.findOne({
+        where: { email: data.email },
+      });
+      if (userCheckEmail) {
+        const tokens = await this.getTokens(
+          userCheckEmail.id,
+          userCheckEmail.email,
+        ); // tokens contain access token and refresh token
+        this.addRefreshTokenToDB(userCheckEmail.id, tokens.refresh_token);
+        // create new access token and refresh token
+        console.log(tokens);
+        return tokens;
+      }
+      // ----------------------------------------------------------------------------------------------
+      console.log('create new user in DB - by GG / FB / Twitter');
+      // check exist role
+      let role = await this.roleService.findOneByRole(
+        userLoginInfo?.role.role || '',
+      );
+      if (!role) {
+        role = await this.roleService.findOneByRole('user');
+      }
+      const newUser = new User(
+        data.email,
+        Math.random().toString(36).substring(3, 12),
+        data.name,
+        'Default Bio',
+        role,
+      );
+      newUser.socialId = data.sub;
+      newUser.social = social;
+      return this.signupLocal(newUser);
+    }
+
+    console.log('user already exists in DB');
+    // console.log(loginUser);
+    const tokens = await this.getTokens(userLoginInfo.id, userLoginInfo.email); // tokens contain access token and refresh token
+    this.addRefreshTokenToDB(userLoginInfo.id, tokens.refresh_token);
+    // create new access token and refresh token
+    console.log(tokens);
+    return tokens;
   }
 }

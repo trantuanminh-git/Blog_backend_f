@@ -6,6 +6,7 @@ import {
   UseGuards,
   Get,
   Redirect,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
@@ -16,6 +17,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
 import { Tokens } from './types/tokens.type';
+import { SocialLoginDto } from './dto/socialLogin.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -89,5 +91,14 @@ export class AuthController {
   githubAuthRedirect(@Req() req) {
     return this.authService.validateUser(req.user);
     // return this.authService.googleLogin(req);
+  }
+
+  @Post('/login/social')
+  loginSocial(
+    // @Req() req,
+    @Query('tokenSocial') tokenSocial: string,
+    @Query('social') social: string,
+  ): Promise<Tokens> {
+    return this.authService.socialLogin(tokenSocial, social);
   }
 }

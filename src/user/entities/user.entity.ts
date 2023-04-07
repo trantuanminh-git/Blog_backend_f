@@ -60,6 +60,14 @@ export class User {
   @Column()
   roleId: number;
 
+  @Column({ nullable: true })
+  @AutoMap()
+  socialId: string;
+
+  @Column({ nullable: true })
+  @AutoMap()
+  social: string;
+
   @AutoMap()
   @ManyToOne(() => Role, (role) => role.users, { cascade: true })
   role: Role;
