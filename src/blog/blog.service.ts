@@ -76,6 +76,7 @@ export class BlogService {
       createBlogDto.content,
       [],
       user,
+      createBlogDto.imageUrl,
     );
 
     const newTags = createBlogDto.tags.split(',');
