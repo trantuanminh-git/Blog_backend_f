@@ -31,6 +31,9 @@ export class Notification {
   @Column({ default: false })
   isRead: boolean;
 
+  @Column({ default: false })
+  isAdmin: boolean;
+
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
