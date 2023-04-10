@@ -94,11 +94,7 @@ export class AuthController {
   }
 
   @Post('/login/social')
-  loginSocial(
-    // @Req() req,
-    @Query('tokenSocial') tokenSocial: string,
-    @Query('social') social: string,
-  ): Promise<Tokens> {
-    return this.authService.socialLogin(tokenSocial, social);
+  loginSocial(@Body() socialLoginData: SocialLoginDto): Promise<Tokens> {
+    return this.authService.socialLogin(socialLoginData);
   }
 }

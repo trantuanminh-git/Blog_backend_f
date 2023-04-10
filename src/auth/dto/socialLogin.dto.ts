@@ -1,9 +1,21 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class SocialLoginDto {
+  // @IsNotEmpty()
+  // @IsString()
+  // token: string;
+
   @IsNotEmpty()
   @IsString()
-  token: string;
+  socialId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
   @IsNotEmpty()
   @IsString()

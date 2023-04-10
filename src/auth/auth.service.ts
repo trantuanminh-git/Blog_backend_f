@@ -216,21 +216,20 @@ export class AuthService {
     }
   }
 
-  async socialLogin(tokenSocial: string, social: string): Promise<Tokens> {
+  async socialLogin(socialLoginData: SocialLoginDto): Promise<Tokens> {
     // infomation of user login social
-    const data = (await this.jwtService.decode(tokenSocial)) as GoogleLoginDto;
-    // console.log(data);
+    // const data = (await this.jwtService.decode(tokenSocial)) as GoogleLoginDto;
 
     // check if user login with social is already existed in database, check by socialId and social
     const userLoginInfo = await this.userService.findOneUserBySocial(
-      data.sub,
-      social,
+      socialLoginData.socialId,
+      socialLoginData.social,
     );
     console.log(userLoginInfo);
     if (!userLoginInfo) {
       // if user not already login with social, but user already use the email to sign up local before
       const userCheckEmail = await this.userRepository.findOne({
-        where: { email: data.email },
+        where: { email: socialLoginData.email },
       });
       if (userCheckEmail) {
         const tokens = await this.getTokens(
@@ -252,14 +251,14 @@ export class AuthService {
         role = await this.roleService.findOneByRole('user');
       }
       const newUser = new User(
-        data.email,
+        socialLoginData.email,
         Math.random().toString(36).substring(3, 12),
-        data.name,
+        socialLoginData.name,
         'Default Bio',
         role,
       );
-      newUser.socialId = data.sub;
-      newUser.social = social;
+      newUser.socialId = socialLoginData.socialId;
+      newUser.social = socialLoginData.social;
       return this.signupLocal(newUser);
     }
 
