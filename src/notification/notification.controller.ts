@@ -31,7 +31,7 @@ export class NotificationController {
   ) {
     limit = limit > 100 ? 100 : limit;
 
-    return this.notificationService.findAll(
+    return this.notificationService.findAllNotificationUser(
       page,
       limit
     );
@@ -41,8 +41,14 @@ export class NotificationController {
   @UseGuards(AtGuard, RoleGuard)
   @Get('/all')
   async getAll() {
+    return this.notificationService.allOfUser();
+  }
 
-    return this.notificationService.all();
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
+  @Get('/allAdmin')
+  async getAllAdmin() {
+    return this.notificationService.getAllNotificationAdmin();
   }
 
   @Post()
@@ -67,6 +73,13 @@ export class NotificationController {
   @UseGuards(AtGuard)
   markAllNotification(@GetCurrentUserId() userId: number) {
     return this.notificationService.markNotificationsAsRead(userId);
+  }
+
+  @Roles('admin')
+  @UseGuards(AtGuard, RoleGuard)
+  @Put('markAllAdmin')
+  markNotificationAdmin() {
+    return this.notificationService.markAllNotificationAdmin();
   }
 
   @Put(':id')

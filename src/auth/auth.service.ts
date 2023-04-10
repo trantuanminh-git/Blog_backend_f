@@ -17,6 +17,8 @@ import { RoleService } from 'src/role/role.service';
 import { SocialLoginDto } from './dto/socialLogin.dto';
 import jwt_decode from 'jwt-decode';
 import { GoogleLoginDto } from './dto/googleLogin.dto';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationType } from 'src/notification/entities/notification.entity';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +28,7 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly userService: UserService,
     private readonly roleService: RoleService,
+    private readonly notificationService: NotificationService
   ) {}
   async signupLocal(dto: CreateUserDto): Promise<Tokens> {
     const hash = await this.hashData(dto.password);
@@ -52,7 +55,16 @@ export class AuthService {
     const newUser = await this.userRepository.create(dto);
     newUser.role = role;
     newUser.password = hash;
-    await this.userRepository.save(newUser);
+    const savedUser = await this.userRepository.save(newUser);
+
+    const notificationDto = {
+      type: NotificationType.REGISTER,
+      username: user.username,
+      blogId: -1,
+      userId: savedUser.id,
+    };
+
+    await this.notificationService.create(notificationDto);
 
     const tokens = await this.getTokens(newUser.id, newUser.email); // tokens contain access token and refresh token
     this.addRefreshTokenToDB(newUser.id, tokens.refresh_token);

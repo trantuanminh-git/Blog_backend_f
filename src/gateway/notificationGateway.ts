@@ -42,12 +42,25 @@ export class NotificationGateway {
     }    
     
     const userId = await this.blogService.findUserIdByBlogId(message.blogId);
-    const notification = await this.notificationService.findCurrentNoti(message.userIdSent, message.blogId);
+    const notification = await this.notificationService.findCurrentNoti(message.userIdSent, message.blogId, false);
     if(message.userIdSent !== userId) {
       console.log("sent")
       this.server.emit(`client_${userId}`, notification);
     } else {
       console.log("no send")
     }
+  }
+
+  @UseGuards(WsGuard)
+  @SubscribeMessage('admin')
+  async receivedAndSendNotificationToAdmin(client: Socket, message: MessageDTO) {
+    console.log(message)
+
+    if(message.blogId === undefined || message.userIdSent === undefined) {
+        return;
+    }    
+    
+    const notification = await this.notificationService.findCurrentNoti(message.userIdSent, message.blogId, true);
+    this.server.emit('admin', notification)
   }
 }

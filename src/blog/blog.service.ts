@@ -81,11 +81,16 @@ export class BlogService {
 
     const newTags = createBlogDto.tags.split(',');
     newBlog.tags = await this.addTagToBlog(newTags);
-    console.log(newBlog);
-
-    // newBlog.averageRating = this.calculateAverageRating()
-
-    await this.blogRepository.save(newBlog);
+    const savedBlog = await this.blogRepository.save(newBlog);
+    
+    const notificationDto = {
+      type: NotificationType.CREATE,
+      username: user.username,
+      blogId: savedBlog.id,
+      userId: user.id,
+    };
+    
+    await this.notificationService.create(notificationDto);
 
     // return newBlog without password and refresh token
     return this.blogRepository

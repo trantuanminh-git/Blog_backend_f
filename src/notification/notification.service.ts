@@ -3,8 +3,6 @@ import {
   Injectable,
   HttpException,
   HttpStatus,
-  Inject,
-  forwardRef,
 } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -16,7 +14,6 @@ export class NotificationService {
   constructor(
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
-    // @Inject(forwardRef(() => BlogService))
     private readonly blogService: BlogService,
   ) {}
 
@@ -44,6 +41,7 @@ export class NotificationService {
     return await this.notificationRepository.find({
       where: {
         blogId: In([...blogIds]),
+        isAdmin: false
       },
       order: {
         createdAt: 'DESC',
@@ -63,6 +61,11 @@ export class NotificationService {
       );
     }
     notification.isRead = true;
+
+    if (notification.type == 'register') {
+      return `/user/${notification.userId}`
+    }
+
     await this.notificationRepository.save(notification);
     return `/blog/${notification.blogId}`;
   }
@@ -112,7 +115,8 @@ export class NotificationService {
     await this.notificationRepository.update(
       {
         blogId: In([...blogIds]),
-        isRead: false
+        isRead: false,
+        isAdmin: false
       },
       {
         isRead: true
@@ -120,12 +124,13 @@ export class NotificationService {
     );
   }
 
-  async findCurrentNoti(userId: number, blogId: number): Promise<Notification[]> {
+  async findCurrentNoti(userId: number, blogId: number, isAdmin: boolean): Promise<Notification[]> {
     return await this.notificationRepository.find({
       where: {
         userId: userId,
         blogId: blogId,
-        isRead: false
+        isRead: false,
+        isAdmin: isAdmin
       },
       take: 1,
       order: {
@@ -134,7 +139,7 @@ export class NotificationService {
     })
   }
 
-  async findAll(
+  async findAllNotificationUser(
     page: number,
     limit: number,
   ): Promise<[Notification[], number]> {
@@ -142,6 +147,9 @@ export class NotificationService {
     const skipRating = limit * (page - 1);
 
     return await this.notificationRepository.findAndCount({
+      where: {
+        isAdmin: false
+      },
       take: limit,
       skip: skipRating,
       order: {
@@ -150,7 +158,30 @@ export class NotificationService {
     });
   }
 
-  async all(): Promise<Notification[]> {
-    return await this.notificationRepository.find()
+  async allOfUser(): Promise<Notification[]> {
+    return await this.notificationRepository.find({where: {isAdmin: false}})
+  }
+
+  async getAllNotificationAdmin(): Promise<Notification[]> {
+    return await this.notificationRepository.find({
+      where: {
+        isAdmin: true
+      }, 
+      order: {
+        createdAt: 'DESC'
+    }})
+  }
+
+  async markAllNotificationAdmin(): Promise<void> {
+    await this.notificationRepository.update(
+      {
+        isRead: false,
+        isAdmin: true
+      },
+      {
+        isRead: true
+      }
+    );
   }
 }
+

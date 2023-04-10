@@ -14,7 +14,8 @@ export enum NotificationType {
   LIKE = 'like',
   COMMENT = 'comment',
   RATING = 'rating',
-  CREATE = 'create'
+  CREATE = 'create',
+  REGISTER = 'register'
 }
 
 @Entity('notification')
@@ -87,9 +88,15 @@ export class Notification {
         break; 
       } 
       case 'create': { 
-        content = `${userName} ${type}d new blog.`; 
+        content = `${userName} ${type}d new blog.`;
+        this.isAdmin = true;
         break; 
       } 
+      case 'register': {
+        content = `A new user has registered with userId: ${userId}`
+        this.isAdmin = true;
+        break;
+      }
       default: { 
         break; 
       } 
@@ -100,3 +107,4 @@ export class Notification {
     this.blogId = blogId;
   }
 }
+

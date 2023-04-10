@@ -9,6 +9,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GithubStrategy } from './strategies/github.strategy';
 import { RoleModule } from 'src/role/role.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RoleModule } from 'src/role/role.module';
       signOptions: { expiresIn: '60s' },
     }),
     RoleModule,
+    NotificationModule
   ],
   controllers: [AuthController],
   providers: [
