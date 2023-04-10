@@ -32,7 +32,6 @@ import { RatingService } from 'src/rating/rating.service';
 import { UpdateRatingDto } from 'src/rating/dto/update-rating.dto';
 import { NotificationService } from 'src/notification/notification.service';
 import { ReadBlogDto } from './dto/read-blog.dto';
-import { AwsService } from 'src/aws/aws.service';
 
 @Injectable()
 export class BlogService {
@@ -48,7 +47,6 @@ export class BlogService {
     private readonly ratingService: RatingService,
     @Inject(forwardRef(() => NotificationService))
     private readonly notificationService: NotificationService,
-    private readonly awsService: AwsService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -76,12 +74,12 @@ export class BlogService {
     const newBlog = new Blog(
       createBlogDto.title,
       createBlogDto.content,
-      createBlogDto.imageUrl,
       [],
       user,
+      createBlogDto.imageUrl,
     );
 
-    const newTags = createBlogDto.tags.split(' ');
+    const newTags = createBlogDto.tags.split(',');
     newBlog.tags = await this.addTagToBlog(newTags);
     console.log(newBlog);
 
@@ -258,12 +256,10 @@ export class BlogService {
 
     const newTitle = updateBlogDto.title;
     const newContent = updateBlogDto.content;
-    const newTags = updateBlogDto.tags.split(' ');
-    const imageUrl = updateBlogDto.imageUrl;
+    const newTags = updateBlogDto.tags.split(',');
 
     if (newTitle) toUpdateBlog.title = newTitle;
     if (newContent) toUpdateBlog.content = newContent;
-    if (imageUrl) toUpdateBlog.imageUrl = imageUrl;
     toUpdateBlog.tags = await this.addTagToBlog(newTags); // if tag is existed, not add
 
     return await this.blogRepository.save(toUpdateBlog);
@@ -589,28 +585,28 @@ export class BlogService {
     await this.notificationService.create(notificationDto);
   }
 
-  // async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
-  //   if (!file) {
-  //     throw new HttpException(
-  //       new Error("This file doesn't exists"),
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  //   const blog = await this.blogRepository.findOneBy({
-  //     id: blogId,
-  //     userId: userId,
-  //   });
-  //   if (!blog) {
-  //     throw new HttpException(
-  //       new Error("This blog doesn't exists"),
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  //   const urlImage = await this.awsService.fileUpload(file);
-  //   blog.imageUrl = urlImage+'';
+  async uploadImage(userId: number, file, blogId: number): Promise<Blog> {
+    if (!file) {
+      throw new HttpException(
+        new Error("This file doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const blog = await this.blogRepository.findOneBy({
+      id: blogId,
+      userId: userId,
+    });
+    if (!blog) {
+      throw new HttpException(
+        new Error("This blog doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    // const urlImage = await this.awsService.fileUpload(file);
+    // blog.imageUrl = urlImage+'';
 
-  //   return await this.blogRepository.save(blog);
-  // }
+    return await this.blogRepository.save(blog);
+  }
 
   async findBlogByUserId(userId: number): Promise<Blog[]> {
     return await this.blogRepository.find({

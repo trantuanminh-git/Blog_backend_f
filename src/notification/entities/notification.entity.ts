@@ -14,6 +14,7 @@ export enum NotificationType {
   LIKE = 'like',
   COMMENT = 'comment',
   RATING = 'rating',
+  CREATE = 'create'
 }
 
 @Entity('notification')
@@ -29,6 +30,9 @@ export class Notification {
 
   @Column({ default: false })
   isRead: boolean;
+
+  @Column({ default: false })
+  isAdmin: boolean;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -68,8 +72,30 @@ export class Notification {
   blog: Blog;
 
   constructor(type: NotificationType, userName: string, userId: number, blogId: number) {
+    let content = "";
+    switch(type) { 
+      case 'rating': { 
+        content = `${userName} ${type}d on your blog.`;
+        break; 
+      } 
+      case 'like': { 
+        content = `${userName} ${type}s your blog.`; 
+        break; 
+      } 
+      case 'comment': { 
+        content = `${userName} ${type}ed on your blog.`; 
+        break; 
+      } 
+      case 'create': { 
+        content = `${userName} ${type}d new blog.`; 
+        break; 
+      } 
+      default: { 
+        break; 
+      } 
+    } 
     this.type = type;
-    this.content = `${userName} had ${type} the your blog.`;
+    this.content = content;
     this.userId = userId;
     this.blogId = blogId;
   }
