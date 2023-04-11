@@ -59,8 +59,8 @@ export class AuthService {
 
     const notificationDto = {
       type: NotificationType.REGISTER,
-      username: user.username,
-      blogId: -1,
+      username: savedUser.username,
+      blogId: null,
       userId: savedUser.id,
     };
 

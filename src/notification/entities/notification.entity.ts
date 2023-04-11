@@ -60,12 +60,13 @@ export class Notification {
   })
   user: User;
 
-  @Column('int')
+  @Column('int', {nullable: true})
   blogId: number;
 
   @ManyToOne(() => Blog, (blog: Blog) => blog.notifications, {
     onDelete: 'CASCADE',
-  })
+    nullable: true
+  } )
   @JoinColumn({
     name: 'blogId',
     referencedColumnName: 'id',
