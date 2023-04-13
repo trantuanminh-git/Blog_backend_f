@@ -17,9 +17,9 @@ services:
       - 3000
     environment:
       DB_PORT: 3306
-      DB_HOST: database-instance-fetch-blog.c6yjm89xnwey.ap-southeast-1.rds.amazonaws.com
-      DB_USERNAME: admin
-      DB_PASSWORD: 12345678
+      DB_HOST: blog-db.c6yjm89xnwey.ap-southeast-1.rds.amazonaws.com
+      DB_USERNAME: master
+      DB_PASSWORD: 0963556091
       DB_NAME: blog
       GOOGLE_CLIENT_ID: 426969523736-c3emj60k33tut90n3uklfi2c5h7dj7lb.apps.googleusercontent.com
       GOOGLE_SECRET: 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
@@ -27,8 +27,8 @@ services:
       FB_APP_SECRET: 729616519c1d861b0233a4275eccf7a4
       GITHUB_CLIENT_ID: ab652c888e7e1b0263f9
       GITHUB_SECRET: 2363525fcc1196949e5667b0442cc087949631b7
-      AWS_ACCESS_KEY: AKIAW7VMFUQFDBS4NJHC
-      AWS_SECRET_ACCESS_KEY: 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
+      AWS_ACCESS_KEY: AKIAW7VMFUQFMW42U5PN
+      AWS_SECRET_ACCESS_KEY: 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
       S3_REGION: ap-southeast-1
       S3_BUCKET: fetch-blog-image
   mysql:
