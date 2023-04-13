@@ -38,6 +38,16 @@ export class BlogController {
     return this.blogService.findAll();
   }
 
+  @Get('count')
+  getCount() {
+    return this.blogService.getCount();
+  }
+
+  @Get('countView')
+  getCountView() {
+    return this.blogService.getCountView();
+  }
+
   @Get('get-blog-by-title/:title')
   findByTitle(@Param('title') title: string): Promise<[Blog[], number]> {
     return this.blogService.findByTitle(title);

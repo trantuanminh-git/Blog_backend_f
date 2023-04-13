@@ -82,14 +82,14 @@ export class BlogService {
     const newTags = createBlogDto.tags.split(',');
     newBlog.tags = await this.addTagToBlog(newTags);
     const savedBlog = await this.blogRepository.save(newBlog);
-    
+
     const notificationDto = {
       type: NotificationType.CREATE,
       username: user.username,
       blogId: savedBlog.id,
       userId: user.id,
     };
-    
+
     await this.notificationService.create(notificationDto);
 
     // return newBlog without password and refresh token
@@ -126,6 +126,23 @@ export class BlogService {
       .getMany();
 
     return blogs;
+  }
+
+  async getCount() {
+    const data = await this.findAll();
+    const count = data.length;
+
+    return count;
+  }
+
+  async getCountView() {
+    const data = await this.findAll();
+    let count = 0;
+    data.forEach((item) => {
+      count += item.view;
+    });
+
+    return count;
   }
 
   async findById(id: number, ip?: string): Promise<Blog> {

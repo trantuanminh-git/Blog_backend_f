@@ -99,6 +99,13 @@ export class UserService {
     return this.classMapper.mapArrayAsync(allUser, User, ReadUserInfoDto);
   }
 
+  async getCount() {
+    const data = await this.findAll();
+    const count = data.length;
+
+    return count;
+  }
+
   async findOne(id: number): Promise<ReadUserInfoDto[]> {
     const user = await this.userRepository
       .createQueryBuilder('user')

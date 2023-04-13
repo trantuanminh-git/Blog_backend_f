@@ -53,6 +53,11 @@ export class UserController {
     return await this.userService.findAll();
   }
 
+  @Get('count')
+  getCount() {
+    return this.userService.getCount();
+  }
+
   @UseGuards(AtGuard)
   @UseInterceptors(FileInterceptor('file'))
   @Post('/upload/avatar')
