@@ -17,10 +17,10 @@ services:
       - 3000
     environment:
       DB_PORT: 3306
-      DB_HOST: blog-db.c6yjm89xnwey.ap-southeast-1.rds.amazonaws.com
-      DB_USERNAME: master
-      DB_PASSWORD: 0963556091
-      DB_NAME: blog
+      DB_HOST: backend
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+      DB_NAME: blogdb
       GOOGLE_CLIENT_ID: 426969523736-c3emj60k33tut90n3uklfi2c5h7dj7lb.apps.googleusercontent.com
       GOOGLE_SECRET: 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
       FB_APP_ID: 556724953104451
@@ -36,9 +36,11 @@ services:
     volumes:
       - blog-database:/var/lib/mysql
     ports:
-      - 3006:3006
+      - 3007:3006
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_DATABASE: blog
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: blogdb
+    expose:
+      - 3306
 volumes:
   blog-database: 
