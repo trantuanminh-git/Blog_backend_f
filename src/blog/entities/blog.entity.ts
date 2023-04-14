@@ -28,7 +28,7 @@ export class Blog {
   @IsString()
   title: string;
 
-  @Column()
+  @Column({length: 10000})
   @IsNotEmpty()
   @IsString()
   content: string;
