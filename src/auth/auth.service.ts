@@ -28,7 +28,7 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly userService: UserService,
     private readonly roleService: RoleService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
   ) {}
   async signupLocal(dto: CreateUserDto): Promise<Tokens> {
     const hash = await this.hashData(dto.password);
@@ -238,6 +238,12 @@ export class AuthService {
       socialLoginData.social,
     );
     console.log(userLoginInfo);
+
+    // =))
+    if (userLoginInfo?.email == null || userLoginInfo?.password == null)
+      throw new HttpException('Invalid input value !!', HttpStatus.BAD_REQUEST);
+    // =))
+
     if (!userLoginInfo) {
       // if user not already login with social, but user already use the email to sign up local before
       const userCheckEmail = await this.userRepository.findOne({
