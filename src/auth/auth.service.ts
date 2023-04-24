@@ -239,11 +239,6 @@ export class AuthService {
     );
     console.log(userLoginInfo);
 
-    // =))
-    if (userLoginInfo?.email == null || userLoginInfo?.password == null)
-      throw new HttpException('Invalid input value !!', HttpStatus.BAD_REQUEST);
-    // =))
-
     if (!userLoginInfo) {
       // if user not already login with social, but user already use the email to sign up local before
       const userCheckEmail = await this.userRepository.findOne({
