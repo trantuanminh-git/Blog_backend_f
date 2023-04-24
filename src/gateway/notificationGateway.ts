@@ -1,7 +1,7 @@
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { AtGuard } from 'src/common/guards/at.guard';
 import { WsGuard } from './guard/ws.guard';
-import { UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { UseGuards, HttpException, HttpStatus, ExecutionContext, Req } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   ConnectedSocket,
@@ -33,8 +33,15 @@ export class NotificationGateway {
   }
 
   @UseGuards(WsGuard)
+  @SubscribeMessage('join')
+  async clientJoinRoom( client: Socket, userID: string) {
+    client.join(`room_${userID}`)
+    console.log(`Client join the room: ${client.rooms}`)
+  }
+
+  @UseGuards(WsGuard)
   @SubscribeMessage('notification')
-  async receivedAndSendNotificationToUser(client: Socket, message: MessageDTO) {
+  async receivedAndSendNotificationToUser( client: Socket, message: MessageDTO) {
     console.log(message)
 
     if(message.blogId === undefined || message.userIdSent === undefined) {
@@ -45,7 +52,7 @@ export class NotificationGateway {
     const notification = await this.notificationService.findCurrentNoti(message.userIdSent, message.blogId, false);
     if(message.userIdSent !== userId) {
       console.log("sent")
-      this.server.emit(`client_${userId}`, notification);
+      this.server.to(`room_${userId}`).emit(`client_${userId}`, { to: userId, message: notification});
     } else {
       console.log("no send")
     }
@@ -61,6 +68,6 @@ export class NotificationGateway {
     }    
     
     const notification = await this.notificationService.findCurrentNoti(message.userIdSent, message.blogId, true);
-    this.server.emit('admin', notification)
+    this.server.to("room_admin").emit('sent_admin', notification)
   }
 }

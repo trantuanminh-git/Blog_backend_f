@@ -7,7 +7,7 @@ import {
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { In, Repository } from 'typeorm';
-import { Notification } from './entities/notification.entity';
+import { Notification, NotificationType } from './entities/notification.entity';
 import { BlogService } from 'src/blog/blog.service';
 @Injectable()
 export class NotificationService {
@@ -183,5 +183,25 @@ export class NotificationService {
       }
     );
   }
+
+async deleteNotificationLike( type, blogId, userId) {
+  if (type === NotificationType.LIKE) {
+    const notification = await this.notificationRepository.findOne({ 
+          where: {
+            userId: userId,
+            blogId: blogId
+          }
+      });
+
+    if (!notification) {
+      throw new HttpException(
+        new Error("This notification doesn't exists"),
+        HttpStatus.BAD_REQUEST,
+    )}
+      
+    await this.notificationRepository.delete(notification.id)
+  }
+  return;
+}
 }
 

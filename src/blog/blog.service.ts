@@ -327,6 +327,7 @@ export class BlogService {
       } else {
         const newLike = await this.likeService.remove(userId, id);
         // console.log(like);
+        await this.notificationService.deleteNotificationLike(NotificationType.LIKE, id, userId)
       }
       return await this.findById(id);
     } catch (err) {
