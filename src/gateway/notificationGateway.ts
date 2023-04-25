@@ -14,12 +14,14 @@ import { BlogService } from 'src/blog/blog.service';
 import { User } from 'src/user/entities/user.entity';
 import { MessageDTO } from './dto/message.dto';
 import { NotificationService } from 'src/notification/notification.service';
+import { UserService } from 'src/user/user.service';
 @WebSocketGateway({ cors: true })
 export class NotificationGateway {
   @WebSocketServer()
   server: Server;
 
   constructor(
+    private userService: UserService,
     private blogService: BlogService,
     private notificationService: NotificationService
     ) {}
@@ -63,11 +65,19 @@ export class NotificationGateway {
   async receivedAndSendNotificationToAdmin(client: Socket, message: MessageDTO) {
     console.log(message)
 
-    if(message.blogId === undefined || message.userIdSent === undefined) {
+    if(message.userIdSent === undefined) {
         return;
-    }    
-    
+    }
+
+    const admins = await this.userService.findAdmins();
+    if ( admins.length) {
+      return;
+    }
+
     const notification = await this.notificationService.findCurrentNoti(message.userIdSent, message.blogId, true);
-    this.server.to("room_admin").emit('sent_admin', notification)
+
+    admins.forEach( (admin) => {
+      this.server.to(`room_${admin.id}`).emit(`client_${admin.id}`, notification)
+    })
   }
 }
