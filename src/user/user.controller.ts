@@ -48,6 +48,13 @@ export class UserController {
     return this.userService.create(createUserDto, curUserId);
   }
 
+  @Roles('admin')
+  @UseGuards(RoleGuard)
+  @Get('/admin')
+  async findAllAdmin(): Promise<ReadUserInfoDto[]> {
+    return await this.userService.findAdmins();
+  }
+
   @Get()
   async findAll(): Promise<ReadUserInfoDto[]> {
     return await this.userService.findAll();

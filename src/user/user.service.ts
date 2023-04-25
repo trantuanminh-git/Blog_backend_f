@@ -218,4 +218,11 @@ export class UserService {
     const saveUser = await this.userRepository.save(user);
     return this.classMapper.map(saveUser, User, ReadUserInfoDto);
   }
+
+  async findAdmins(): Promise<ReadUserInfoDto[]> {
+    
+    const user = await this.userRepository.find({where: {roleId: 1}})
+
+    return this.classMapper.mapArrayAsync(user, User, ReadUserInfoDto)
+  }
 }
