@@ -33,6 +33,11 @@ export class CommentController {
     return this.commentService.findAll();
   }
 
+  @Get('chart')
+  getChart() {
+    return this.commentService.getChart();
+  }
+
   @Get('latest')
   indexAll(@Query('page') page = 1, @Query('limit') limit = 10) {
     limit = limit > 100 ? 100 : limit;

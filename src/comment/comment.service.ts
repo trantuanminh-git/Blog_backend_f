@@ -46,6 +46,16 @@ export class CommentService {
     });
   }
 
+  async getChart(): Promise<Comment[]> {
+    const comments = await this.commentRepository
+      .createQueryBuilder('comment')
+      .select('DATE(comment.createdAt) AS date, COUNT(*) AS count')
+      .groupBy('date')
+      .getRawMany();
+
+    return comments;
+  }
+
   paginateAll(options: IPaginationOptions): Observable<Pagination<Comment>> {
     return from(
       paginate<Comment>(this.commentRepository, options, {

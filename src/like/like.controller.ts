@@ -32,6 +32,11 @@ export class LikeController {
     return await this.likeService.findOneByBlogAndUser(userId, blogId);
   }
 
+  @Get('chart')
+  getChart() {
+    return this.likeService.getChart();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.likeService.findOne(id);

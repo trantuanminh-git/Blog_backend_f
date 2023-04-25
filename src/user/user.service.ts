@@ -99,6 +99,16 @@ export class UserService {
     return this.classMapper.mapArrayAsync(allUser, User, ReadUserInfoDto);
   }
 
+  async getChart(): Promise<User[]> {
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .select('DATE(user.createdAt) AS date, COUNT(*) AS count')
+      .groupBy('date')
+      .getRawMany();
+
+    return users;
+  }
+
   async getCount() {
     const data = await this.findAll();
     const count = data.length;
@@ -220,9 +230,8 @@ export class UserService {
   }
 
   async findAdmins(): Promise<ReadUserInfoDto[]> {
-    
-    const user = await this.userRepository.find({where: {roleId: 1}})
+    const user = await this.userRepository.find({ where: { roleId: 1 } });
 
-    return this.classMapper.mapArrayAsync(user, User, ReadUserInfoDto)
+    return this.classMapper.mapArrayAsync(user, User, ReadUserInfoDto);
   }
 }

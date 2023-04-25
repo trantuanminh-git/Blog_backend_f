@@ -8,11 +8,13 @@ import { Role } from 'src/role/entities/role.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -67,6 +69,19 @@ export class User {
   @Column({ nullable: true })
   @AutoMap()
   social: string;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
+  createdAt: Date; // Creation date
+
+  @UpdateDateColumn({
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    type: 'timestamp',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
+  updatedAt: Date; // Last updated date
 
   @AutoMap()
   @ManyToOne(() => Role, (role) => role.users, { cascade: true })

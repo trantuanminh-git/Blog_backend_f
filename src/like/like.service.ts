@@ -36,6 +36,16 @@ export class LikeService {
     return await this.likeRepository.find();
   }
 
+  async getChart(): Promise<Likes[]> {
+    const likes = await this.likeRepository
+      .createQueryBuilder('like')
+      .select('DATE(like.createdAt) AS date, COUNT(*) AS count')
+      .groupBy('date')
+      .getRawMany();
+
+    return likes;
+  }
+
   async findOneByBlogAndUser(userId: number, blogId: number) {
     if (userId == undefined || blogId == undefined) return null;
     console.log(userId, blogId);

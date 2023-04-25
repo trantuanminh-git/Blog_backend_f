@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('like')
@@ -21,6 +23,19 @@ export class Likes {
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
+  createdAt: Date; // Creation date
+
+  @UpdateDateColumn({
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    type: 'timestamp',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  }) // You don't need to set this column - it will be automatically set
+  updatedAt: Date; // Last updated date
 
   @Column('int')
   blogId: number;

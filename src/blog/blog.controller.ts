@@ -16,7 +16,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
-import { PoliciesGuard } from 'src/ability/abilities.guard';
 import { Action } from 'src/ability/ability.factory/ability.factory';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { AtGuard } from 'src/common/guards/at.guard';
@@ -36,6 +35,11 @@ export class BlogController {
   @Get()
   findAll() {
     return this.blogService.findAll();
+  }
+
+  @Get('chart')
+  getChart() {
+    return this.blogService.getChart();
   }
 
   @Get('count')

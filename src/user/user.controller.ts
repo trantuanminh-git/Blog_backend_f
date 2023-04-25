@@ -16,7 +16,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { ReadUserInfoDto } from './dto/read-user-info.dto';
-import { PoliciesGuard } from 'src/ability/abilities.guard';
 import { CheckAbilities } from 'src/ability/abilities.decorator';
 import {
   AbilityFactory,
@@ -58,6 +57,11 @@ export class UserController {
   @Get()
   async findAll(): Promise<ReadUserInfoDto[]> {
     return await this.userService.findAll();
+  }
+
+  @Get('chart')
+  getChart() {
+    return this.userService.getChart();
   }
 
   @Get('count')

@@ -128,6 +128,16 @@ export class BlogService {
     return blogs;
   }
 
+  async getChart(): Promise<Blog[]> {
+    const blogs = await this.blogRepository
+      .createQueryBuilder('blog')
+      .select('DATE(blog.createdAt) AS date, COUNT(*) AS count')
+      .groupBy('date')
+      .getRawMany();
+
+    return blogs;
+  }
+
   async getCount() {
     const data = await this.findAll();
     const count = data.length;
@@ -327,7 +337,11 @@ export class BlogService {
       } else {
         const newLike = await this.likeService.remove(userId, id);
         // console.log(like);
-        await this.notificationService.deleteNotificationLike(NotificationType.LIKE, id, userId)
+        await this.notificationService.deleteNotificationLike(
+          NotificationType.LIKE,
+          id,
+          userId,
+        );
       }
       return await this.findById(id);
     } catch (err) {
