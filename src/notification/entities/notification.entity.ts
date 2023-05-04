@@ -15,7 +15,7 @@ export enum NotificationType {
   COMMENT = 'comment',
   RATING = 'rating',
   CREATE = 'create',
-  REGISTER = 'register'
+  REGISTER = 'register',
 }
 
 @Entity('notification')
@@ -60,52 +60,56 @@ export class Notification {
   })
   user: User;
 
-  @Column('int', {nullable: true})
+  @Column('int', { nullable: true })
   blogId: number;
 
   @ManyToOne(() => Blog, (blog: Blog) => blog.notifications, {
     onDelete: 'CASCADE',
-    nullable: true
-  } )
+    nullable: true,
+  })
   @JoinColumn({
     name: 'blogId',
     referencedColumnName: 'id',
   })
   blog: Blog;
 
-  constructor(type: NotificationType, userName: string, userId: number, blogId: number) {
-    let content = "";
-    switch(type) { 
-      case 'rating': { 
+  constructor(
+    type: NotificationType,
+    userName: string,
+    userId: number,
+    blogId: number,
+  ) {
+    let content = '';
+    switch (type) {
+      case 'rating': {
         content = `${userName} ${type}d on your blog.`;
-        break; 
-      } 
-      case 'like': { 
-        content = `${userName} ${type}s your blog.`; 
-        break; 
-      } 
-      case 'comment': { 
-        content = `${userName} ${type}ed on your blog.`; 
-        break; 
-      } 
-      case 'create': { 
+        break;
+      }
+      case 'like': {
+        content = `${userName} ${type}s your blog.`;
+        break;
+      }
+      case 'comment': {
+        content = `${userName} ${type}ed on your blog.`;
+        break;
+      }
+      case 'create': {
         content = `${userName} ${type}d new blog.`;
-        this.isAdmin = true;
-        break; 
-      } 
-      case 'register': {
-        content = `A new user has registered with userId: ${userId}`
         this.isAdmin = true;
         break;
       }
-      default: { 
-        break; 
-      } 
-    } 
+      case 'register': {
+        content = `A new user has registered with userId: ${userId}`;
+        this.isAdmin = true;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
     this.type = type;
     this.content = content;
     this.userId = userId;
     this.blogId = blogId;
   }
 }
-
