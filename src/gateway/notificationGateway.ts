@@ -64,9 +64,7 @@ export class NotificationGateway {
     );
     if (message.userIdSent !== userId) {
       console.log('sent');
-      this.server
-        .to(`room_${userId}`)
-        .emit(`client_${userId}`, { notification });
+      this.server.to(`room_${userId}`).emit(`client_${userId}`, notification);
       // this.server.to(`room_${userId}`).emit(`client_${userId}`, { to: userId, message: notification});
     } else {
       console.log('no send');
