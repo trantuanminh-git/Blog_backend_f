@@ -165,7 +165,26 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const userToUpdate = Object.assign(toUpdate, updateUserDto);
+
+    const role = await this.roleRepository.findOne({
+      where: { role: updateUserDto.role + '' },
+    });
+    if (!role) {
+      const errors = { role: 'Role not found.' };
+      throw new HttpException(
+        { message: 'Input data validation failed', errors },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // create new user
+    const userToUpdate = new User(
+      updateUserDto.email,
+      updateUserDto.password,
+      updateUserDto.username,
+      updateUserDto.biography,
+      role,
+    );
 
     // const userToUpdate = new User(
     //   'email2@gmail.com',
@@ -176,15 +195,17 @@ export class UserService {
     // );
     // userToUpdate.id = 400;
     try {
-      ForbiddenError.from(ability).throwUnlessCan(Action.Update, userToUpdate);
+      ForbiddenError.from(ability).throwUnlessCan(Action.Update, toUpdate);
     } catch (err) {
       if (err instanceof ForbiddenError) {
         throw new ForbiddenException(err.message);
       }
     }
+    await this.userRepository.update(id, userToUpdate);
+
     // update call DB
     return this.classMapper.mapAsync(
-      await this.userRepository.save(userToUpdate),
+      await this.findOneUserDetail(id),
       User,
       ReadUserInfoDto,
     );

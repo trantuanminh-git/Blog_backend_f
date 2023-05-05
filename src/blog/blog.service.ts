@@ -129,7 +129,8 @@ export class BlogService {
   }
 
   async getChart(): Promise<Blog[]> {
-    const blogs = await this.blogRepository
+    // Use the QueryBuilder to count the number of blogs created every week
+    const blogs = this.blogRepository
       .createQueryBuilder('blog')
       .select('DATE(blog.createdAt) AS date, COUNT(*) AS count')
       .groupBy('date')
