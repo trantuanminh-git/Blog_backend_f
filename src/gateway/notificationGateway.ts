@@ -58,22 +58,20 @@ export class NotificationGateway {
 
     const userId = await this.blogService.findUserIdByBlogId(message.blogId);
 
-    let notification;
-
-    setTimeout(() => {
-      notification = this.notificationService.findCurrentNoti(
+    setTimeout(async () => {
+      const notification = await this.notificationService.findCurrentNoti(
         message.userIdSent,
         message.blogId,
         false,
       );
+      if (message.userIdSent !== userId) {
+        console.log('sent');
+        this.server.to(`room_${userId}`).emit(`client_${userId}`, notification);
+        // this.server.to(`room_${userId}`).emit(`client_${userId}`, { to: userId, message: notification});
+      } else {
+        console.log('no send');
+      }
     }, 1000);
-    if (message.userIdSent !== userId) {
-      console.log('sent');
-      this.server.to(`room_${userId}`).emit(`client_${userId}`, notification);
-      // this.server.to(`room_${userId}`).emit(`client_${userId}`, { to: userId, message: notification});
-    } else {
-      console.log('no send');
-    }
   }
 
   @UseGuards(WsGuard)
