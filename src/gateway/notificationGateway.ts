@@ -57,11 +57,16 @@ export class NotificationGateway {
     }
 
     const userId = await this.blogService.findUserIdByBlogId(message.blogId);
-    const notification = await this.notificationService.findCurrentNoti(
-      message.userIdSent,
-      message.blogId,
-      false,
-    );
+
+    let notification;
+
+    setTimeout(() => {
+      notification = this.notificationService.findCurrentNoti(
+        message.userIdSent,
+        message.blogId,
+        false,
+      );
+    }, 1000);
     if (message.userIdSent !== userId) {
       console.log('sent');
       this.server.to(`room_${userId}`).emit(`client_${userId}`, notification);
