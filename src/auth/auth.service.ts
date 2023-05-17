@@ -112,7 +112,7 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: [{ id: userId }, { refreshToken: Not(IsNull()) }],
     });
-    if (!user)
+    if (!user || !user.refreshToken)
       throw new ForbiddenException('Not found user RtTokens >> Access denied');
     const isRefreshTokenMatches = await bcrypt.compare(
       refreshToken, // refresh token of the current user
